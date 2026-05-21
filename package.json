@@ -1,0 +1,14 @@
+{
+  "name": "trilogy-sdk",
+  "version": "1.0.0",
+  "description": "The AI API Toolkit — DocMind (documents), DEEP (research), FLUX (content). One install, three APIs.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": ["index.js", "index.d.ts", "src/"],
+  "keywords": ["ai", "api", "sdk", "document-parsing", "research", "content-generation", "llm", "ocr", "receipt-parser", "deep-research", "fact-check", "content-engine", "seo"],
+  "author": "sjgant80-hub",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/sjgant80-hub/trilogy-sdk" },
+  "homepage": "https://sjgant80-hub.github.io/trilogy-sdk/",
+  "engines": { "node": ">=18.0.0" }
+}

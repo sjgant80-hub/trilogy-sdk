@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>trilogy-sdk — The AI API Toolkit</title>
+<meta name="description" content="DocMind + Deep + Flux. One npm install. Three AI APIs. Document parsing, deep research, content generation.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#030303;--s:rgba(255,255,255,.03);--s2:rgba(255,255,255,.06);--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);--t:#f0f0f0;--m:rgba(255,255,255,.4);--dm:rgba(255,255,255,.2);--p:#8b5cf6;--o:#f97316;--pk:#f472b6;--g:#10b981;--cy:#06b6d4;--am:#fbbf24}
+body{background:var(--bg);color:var(--t);font-family:'Space Grotesk',system-ui,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.w{max-width:1100px;margin:0 auto;padding:0 28px}
+.mesh{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(150px);opacity:.06;animation:f 25s ease-in-out infinite}
+.blob:nth-child(1){width:600px;height:600px;background:var(--p);top:-150px;right:-100px}
+.blob:nth-child(2){width:500px;height:500px;background:var(--o);bottom:-100px;left:-100px;animation-delay:-8s}
+.blob:nth-child(3){width:400px;height:400px;background:var(--cy);top:50%;left:30%;animation-delay:-16s}
+@keyframes f{0%,100%{transform:translate(0,0)}33%{transform:translate(40px,-50px)}66%{transform:translate(-30px,40px)}}
+.rel{position:relative;z-index:1}
+
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.logo{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.logo span{background:linear-gradient(135deg,var(--p),var(--o),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-r{display:flex;gap:20px;align-items:center}
+.nav-r a{color:var(--m);text-decoration:none;font-size:13px;transition:color .2s}
+.nav-r a:hover{color:var(--t)}
+
+.hero{padding:80px 0 40px;text-align:center}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:20px;border:1px solid var(--b2);font-size:11px;color:var(--m);margin-bottom:24px;background:var(--s)}
+h1{font-size:clamp(36px,6vw,64px);font-weight:800;letter-spacing:-.04em;line-height:1.08;margin-bottom:18px}
+.gr{background:linear-gradient(135deg,var(--p),var(--cy),var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-p{font-size:17px;color:var(--m);max-width:600px;margin:0 auto 28px;font-weight:300;line-height:1.65}
+
+/* Install box */
+.install{display:flex;justify-content:center;margin-bottom:50px}
+.install-box{background:rgba(0,0,0,.6);border:1px solid var(--b2);border-radius:12px;padding:16px 28px;display:flex;align-items:center;gap:16px;backdrop-filter:blur(20px)}
+.install-box code{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--g)}
+.install-box .dol{color:var(--dm);margin-right:4px}
+.copy-btn{background:var(--s2);border:1px solid var(--b);color:var(--m);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.copy-btn:hover{border-color:var(--p);color:var(--t)}
+
+/* Three APIs */
+.apis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:80px}
+.api-card{background:var(--s);border:1px solid var(--b);border-radius:16px;padding:32px;text-align:left;transition:all .3s;position:relative;overflow:hidden}
+.api-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s}
+.api-card:hover{transform:translateY(-3px)}.api-card:hover::before{opacity:1}
+.api-card:nth-child(1)::before{background:linear-gradient(90deg,var(--cy),var(--p))}
+.api-card:nth-child(1):hover{border-color:rgba(6,182,212,.3)}
+.api-card:nth-child(2)::before{background:linear-gradient(90deg,var(--p),var(--pk))}
+.api-card:nth-child(2):hover{border-color:rgba(139,92,246,.3)}
+.api-card:nth-child(3)::before{background:linear-gradient(90deg,var(--o),var(--pk))}
+.api-card:nth-child(3):hover{border-color:rgba(249,115,22,.3)}
+.api-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.api-card:nth-child(1) .api-tag{color:var(--cy)}
+.api-card:nth-child(2) .api-tag{color:var(--p)}
+.api-card:nth-child(3) .api-tag{color:var(--o)}
+.api-card h3{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
+.api-card .desc{font-size:13px;color:var(--m);line-height:1.6;margin-bottom:16px}
+.api-card .methods{display:flex;flex-direction:column;gap:4px}
+.method{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dm);padding:4px 0}
+.method b{color:var(--g);font-weight:500}
+
+/* Code examples */
+.code-section{margin-bottom:80px}
+.code-section h2{font-size:30px;font-weight:700;text-align:center;margin-bottom:32px;letter-spacing:-.03em}
+.code-tabs{display:flex;gap:4px;margin-bottom:0}
+.code-tab{padding:8px 18px;border-radius:10px 10px 0 0;background:var(--s2);color:var(--m);font-size:12px;cursor:pointer;border:none;font-family:inherit;font-weight:500;transition:all .2s}
+.code-tab.active{background:rgba(0,0,0,.6);color:var(--t)}
+.code-block{background:rgba(0,0,0,.6);border:1px solid var(--b);border-radius:0 10px 10px 10px;padding:24px;overflow-x:auto;backdrop-filter:blur(20px)}
+.code-block pre{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8}
+.c-m{color:var(--dm)}.c-k{color:var(--p)}.c-s{color:var(--g)}.c-f{color:var(--cy)}.c-n{color:var(--am)}.c-cm{color:rgba(255,255,255,.15)}
+
+/* Features row */
+.feats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:80px}
+.feat{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:20px;text-align:center;transition:border-color .2s}
+.feat:hover{border-color:rgba(139,92,246,.25)}
+.feat .ico{font-size:24px;margin-bottom:8px}
+.feat h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.feat p{font-size:11px;color:var(--m);line-height:1.5}
+
+footer{padding:40px 0;border-top:1px solid var(--b);text-align:center}
+footer p{font-size:12px;color:var(--dm)}
+footer a{color:var(--p);text-decoration:none}
+
+@media(max-width:768px){.apis,.feats{grid-template-columns:1fr}.install-box{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="mesh"><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
+<div class="rel">
+<div class="w">
+
+<nav>
+  <div class="logo"><span>trilogy</span>-sdk</div>
+  <div class="nav-r">
+    <a href="https://github.com/sjgant80-hub/trilogy-sdk">GitHub</a>
+    <a href="https://www.npmjs.com/package/trilogy-sdk">npm</a>
+    <a href="https://sjgant80-hub.github.io/docmind-api/">DocMind</a>
+    <a href="https://sjgant80-hub.github.io/deep-api/">Deep</a>
+    <a href="https://sjgant80-hub.github.io/flux-api/">Flux</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="chip">v1.0 — zero dependencies</div>
+  <h1>One install.<br><span class="gr">Three AI APIs.</span></h1>
+  <p class="hero-p">DocMind for documents. Deep for research. Flux for content. Full TypeScript. Retries built in. Ship in 5 minutes.</p>
+</div>
+
+<div class="install">
+  <div class="install-box">
+    <code><span class="dol">$</span> npm install trilogy-sdk</code>
+    <button class="copy-btn" onclick="navigator.clipboard.writeText('npm install trilogy-sdk');this.textContent='copied!';setTimeout(()=>this.textContent='copy',1500)">copy</button>
+  </div>
+</div>
+
+<div class="apis">
+  <div class="api-card">
+    <div class="api-tag">Input</div>
+    <h3>DocMind</h3>
+    <p class="desc">Documents in, structured data out. Receipts, invoices, bank statements, contracts.</p>
+    <div class="methods">
+      <div class="method"><b>doc.parse.</b>receipt(file)</div>
+      <div class="method"><b>doc.parse.</b>invoice(text)</div>
+      <div class="method"><b>doc.parse.</b>bankStatement(pdf)</div>
+      <div class="method"><b>doc.parse.</b>contract(buffer)</div>
+      <div class="method"><b>doc.</b>chat(messages)</div>
+    </div>
+  </div>
+  <div class="api-card">
+    <div class="api-tag">Intelligence</div>
+    <h3>Deep</h3>
+    <p class="desc">Questions in, research reports out. Citations, fact-checking, entity comparison.</p>
+    <div class="methods">
+      <div class="method"><b>deep.</b>research(query)</div>
+      <div class="method"><b>deep.</b>quick(query)</div>
+      <div class="method"><b>deep.</b>factCheck(claims)</div>
+      <div class="method"><b>deep.</b>compare(entities)</div>
+      <div class="method"><b>deep.</b>extract(url)</div>
+    </div>
+  </div>
+  <div class="api-card">
+    <div class="api-tag">Output</div>
+    <h3>Flux</h3>
+    <p class="desc">Briefs in, content out. Blogs, threads, emails, ads, landing pages, SEO.</p>
+    <div class="methods">
+      <div class="method"><b>flux.generate.</b>blog(brief)</div>
+      <div class="method"><b>flux.generate.</b>thread(brief)</div>
+      <div class="method"><b>flux.generate.</b>email(brief)</div>
+      <div class="method"><b>flux.</b>repurpose(content)</div>
+      <div class="method"><b>flux.</b>brandVoice(samples)</div>
+    </div>
+  </div>
+</div>
+
+<div class="code-section">
+  <h2>Code that writes itself</h2>
+  <div class="code-tabs">
+    <button class="code-tab active" onclick="showCode(0)">DocMind</button>
+    <button class="code-tab" onclick="showCode(1)">Deep</button>
+    <button class="code-tab" onclick="showCode(2)">Flux</button>
+    <button class="code-tab" onclick="showCode(3)">All Three</button>
+  </div>
+  <div class="code-block"><pre id="codeView"></pre></div>
+</div>
+
+<div class="feats">
+  <div class="feat"><div class="ico">&#128268;</div><h4>Zero Dependencies</h4><p>Uses native fetch. Nothing to install but the SDK itself.</p></div>
+  <div class="feat"><div class="ico">&#128260;</div><h4>Auto Retry</h4><p>Exponential backoff on 429s and 5xx. Configurable max retries.</p></div>
+  <div class="feat"><div class="ico">&#128221;</div><h4>Full TypeScript</h4><p>Complete type declarations. Autocomplete for every method and response.</p></div>
+  <div class="feat"><div class="ico">&#9889;</div><h4>SSE Streaming</h4><p>Stream deep research progress in real time. Step-by-step callbacks.</p></div>
+</div>
+
+</div>
+</div>
+
+<footer>
+  <p>
+    <a href="https://sjgant80-hub.github.io/docmind-api/">DocMind</a> &middot;
+    <a href="https://sjgant80-hub.github.io/deep-api/">Deep</a> &middot;
+    <a href="https://sjgant80-hub.github.io/flux-api/">Flux</a> &middot;
+    <a href="https://github.com/sjgant80-hub/trilogy-sdk">GitHub</a>
+    <br><br>trilogy-sdk &copy; 2026
+  </p>
+</footer>
+
+<script>
+const codes=[
+`<span class="c-k">const</span> { DocMind } = <span class="c-f">require</span>(<span class="c-s">'trilogy-sdk'</span>);
+
+<span class="c-k">const</span> doc = <span class="c-k">new</span> <span class="c-f">DocMind</span>(<span class="c-s">'dm_p_your_key'</span>, {
+  baseUrl: <span class="c-s">'https://your-docmind.railway.app'</span>
+});
+
+<span class="c-cm">// Parse a receipt image</span>
+<span class="c-k">const</span> receipt = <span class="c-k">await</span> doc.parse.<span class="c-f">receipt</span>(<span class="c-s">'./receipt.jpg'</span>);
+console.log(receipt.data.merchant);  <span class="c-cm">// "Tesco Express"</span>
+console.log(receipt.data.total);     <span class="c-cm">// 12.11</span>
+console.log(receipt.data.tax);       <span class="c-cm">// 2.02</span>
+console.log(receipt.data.items);     <span class="c-cm">// [{description: "Milk", ...}]</span>
+
+<span class="c-cm">// Parse invoice from text</span>
+<span class="c-k">const</span> inv = <span class="c-k">await</span> doc.parse.<span class="c-f">invoice</span>(invoiceText);
+console.log(inv.data.line_items);    <span class="c-cm">// structured line items</span>`,
+
+`<span class="c-k">const</span> { Deep } = <span class="c-f">require</span>(<span class="c-s">'trilogy-sdk'</span>);
+
+<span class="c-k">const</span> deep = <span class="c-k">new</span> <span class="c-f">Deep</span>(<span class="c-s">'deep_p_your_key'</span>, {
+  baseUrl: <span class="c-s">'https://your-deep.railway.app'</span>
+});
+
+<span class="c-cm">// Stream research in real time</span>
+<span class="c-k">const</span> task = <span class="c-k">await</span> deep.<span class="c-f">research</span>(<span class="c-s">'AI agent frameworks 2026'</span>);
+<span class="c-k">const</span> report = <span class="c-k">await</span> task.<span class="c-f">stream</span>((step) => {
+  console.log(<span class="c-s">\`[\${step.step}] \${step.detail}\`</span>);
+  <span class="c-cm">// [planning] Breaking into 4 sub-questions...</span>
+  <span class="c-cm">// [searching] "AI agent frameworks comparison"</span>
+  <span class="c-cm">// [analyzing] Sub-question 1/4...</span>
+  <span class="c-cm">// [synthesizing] Compiling final report...</span>
+});
+
+<span class="c-cm">// Fact check claims</span>
+<span class="c-k">const</span> check = <span class="c-k">await</span> deep.<span class="c-f">factCheck</span>([<span class="c-s">'Earth is flat'</span>]);
+console.log(check.claims[<span class="c-n">0</span>].verdict); <span class="c-cm">// "false"</span>`,
+
+`<span class="c-k">const</span> { Flux } = <span class="c-f">require</span>(<span class="c-s">'trilogy-sdk'</span>);
+
+<span class="c-k">const</span> flux = <span class="c-k">new</span> <span class="c-f">Flux</span>(<span class="c-s">'flux_p_your_key'</span>, {
+  baseUrl: <span class="c-s">'https://your-flux.railway.app'</span>,
+  tone: <span class="c-s">'professional'</span>,
+  audience: <span class="c-s">'SaaS founders'</span>,
+});
+
+<span class="c-cm">// Generate a viral thread</span>
+<span class="c-k">const</span> thread = <span class="c-k">await</span> flux.generate.<span class="c-f">thread</span>(
+  <span class="c-s">'Why 90% of landing pages fail'</span>
+);
+console.log(thread.content.hook);   <span class="c-cm">// scroll-stopping first tweet</span>
+console.log(thread.content.tweets); <span class="c-cm">// array of tweets</span>
+
+<span class="c-cm">// Repurpose into every format</span>
+<span class="c-k">const</span> repurposed = <span class="c-k">await</span> flux.<span class="c-f">repurpose</span>(blogPost, {
+  targetTypes: [<span class="c-s">'twitter_thread'</span>, <span class="c-s">'linkedin_post'</span>, <span class="c-s">'email'</span>]
+});`,
+
+`<span class="c-k">const</span> { createTrilogy } = <span class="c-f">require</span>(<span class="c-s">'trilogy-sdk'</span>);
+
+<span class="c-cm">// One call, all three APIs</span>
+<span class="c-k">const</span> { docmind, deep, flux } = <span class="c-f">createTrilogy</span>({
+  docmind: <span class="c-s">'dm_p_...'</span>,
+  deep:    <span class="c-s">'deep_p_...'</span>,
+  flux:    <span class="c-s">'flux_p_...'</span>,
+});
+
+<span class="c-cm">// Pipeline: parse receipt → research vendor → generate report</span>
+<span class="c-k">const</span> receipt = <span class="c-k">await</span> docmind.parse.<span class="c-f">receipt</span>(<span class="c-s">'./receipt.jpg'</span>);
+<span class="c-k">const</span> vendor = <span class="c-k">await</span> deep.<span class="c-f">quick</span>(
+  <span class="c-s">\`Tell me about \${receipt.data.merchant}\`</span>
+);
+<span class="c-k">const</span> report = <span class="c-k">await</span> flux.generate.<span class="c-f">blog</span>(
+  <span class="c-s">\`Expense report: \${receipt.data.merchant}, \${receipt.data.total}\`</span>
+);`
+];
+function showCode(i){
+  document.querySelectorAll('.code-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.getElementById('codeView').innerHTML=codes[i];
+}
+showCode(0);
+</script>
+</body>
+</html>
