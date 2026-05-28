@@ -1967,5 +1967,18 @@ self.addEventListener('fetch', function(event) {
 })();
 </script>
 <!-- /◊·κ FALL-SW SHIM -->
+
+<!-- ◊·κ FALL-HOT · watch canonical plugins · hot-reload without redeploy -->
+<script src="https://sjgant80-hub.github.io/fall-hot/fall-hot.js" defer></script>
+<script>
+  window.addEventListener('fall-hot:ready', function() {
+    window.fallHot.watch([
+      { name: 'fall-palette', url: 'https://sjgant80-hub.github.io/fall-palette/fall-palette.js' },
+      { name: 'fall-bloom',   url: 'https://sjgant80-hub.github.io/fall-bloom/bloom.js' }
+    ], { every: 5 * 60 * 1000 });
+  });
+</script>
+<!-- /◊·κ FALL-HOT -->
+
 </body>
 </html>
