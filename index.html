@@ -1,1984 +1,464 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>trilogy-sdk — The AI API Toolkit</title>
-<meta name="description" content="DocMind + Deep + Flux. One npm install. Three AI APIs. Document parsing, deep research, content generation.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0a">
+<title>Trilogy SDK · DocMind + Deep + Flux · Three AI APIs, One Install</title>
+<meta name="description" content="The AI API Toolkit · DocMind (document intelligence) + Deep (research) + Flux (content) · npm install @sjgant80/trilogy-sdk · TypeScript ready · sovereign.">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Trilogy SDK","short_name":"Trilogy","start_url":".","display":"standalone","background_color":"#0a0a0a","theme_color":"#d4a017","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 fill=%22%230a0a0a%22/><text x=%2232%22 y=%2244%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%23d4a017%22 font-family=%22serif%22 font-weight=%22bold%22>◊</text></svg>","sizes":"any","type":"image/svg+xml"}]}'>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#030303;--s:rgba(255,255,255,.03);--s2:rgba(255,255,255,.06);--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);--t:#f0f0f0;--m:rgba(255,255,255,.4);--dm:rgba(255,255,255,.2);--p:#8b5cf6;--o:#f97316;--pk:#f472b6;--g:#10b981;--cy:#06b6d4;--am:#fbbf24}
-body{background:var(--bg);color:var(--t);font-family:'Space Grotesk',system-ui,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-.w{max-width:1100px;margin:0 auto;padding:0 28px}
-.mesh{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.blob{position:absolute;border-radius:50%;filter:blur(150px);opacity:.06;animation:f 25s ease-in-out infinite}
-.blob:nth-child(1){width:600px;height:600px;background:var(--p);top:-150px;right:-100px}
-.blob:nth-child(2){width:500px;height:500px;background:var(--o);bottom:-100px;left:-100px;animation-delay:-8s}
-.blob:nth-child(3){width:400px;height:400px;background:var(--cy);top:50%;left:30%;animation-delay:-16s}
-@keyframes f{0%,100%{transform:translate(0,0)}33%{transform:translate(40px,-50px)}66%{transform:translate(-30px,40px)}}
-.rel{position:relative;z-index:1}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root { --bg: #0a0a0a; --surface: #141414; --surface-2: #1a1a18; --border: #1a1a1a; --text: #e8e6e3; --muted: #888; --gold: #d4a017; --amber: #e8a012; --success: #44aa44; --danger: #cc3333; --info: #6a9aff; --max: 1080px; }
+html, body { background: var(--bg); color: var(--text); font: 16px/1.7 'DM Mono', ui-monospace, monospace; min-height: 100dvh; -webkit-font-smoothing: antialiased; }
+body { overflow-x: hidden; }
+::selection { background: var(--gold); color: #0a0a0a; }
+a { color: inherit; text-decoration: none; transition: color 0.2s; }
+a:hover { color: var(--gold); }
+h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; line-height: 1.05; letter-spacing: -0.025em; }
+h2 { font-family: 'Syne', system-ui, sans-serif; font-weight: 800; letter-spacing: -0.01em; line-height: 1.1; }
+h3 { font-family: 'Syne', system-ui, sans-serif; font-weight: 700; }
 
-nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
-.logo{font-size:22px;font-weight:800;letter-spacing:-.02em}
-.logo span{background:linear-gradient(135deg,var(--p),var(--o),var(--pk));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.nav-r{display:flex;gap:20px;align-items:center}
-.nav-r a{color:var(--m);text-decoration:none;font-size:13px;transition:color .2s}
-.nav-r a:hover{color:var(--t)}
+header { position: sticky; top: 0; padding: 14px 24px; background: rgba(10, 10, 10, 0.88); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 100; }
+.nav { max-width: var(--max); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark { font-family: 'Playfair Display'; font-weight: 800; color: var(--gold); font-size: 26px; }
+.brand-name { font-family: 'Syne'; font-weight: 800; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; }
+.brand-name b { color: var(--gold); }
+.nav-cta { font-family: 'Syne'; font-weight: 700; padding: 9px 16px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-size: 12px; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+.nav-cta:hover { background: var(--gold); color: #0a0a0a; }
 
-.hero{padding:80px 0 40px;text-align:center}
-.chip{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:20px;border:1px solid var(--b2);font-size:11px;color:var(--m);margin-bottom:24px;background:var(--s)}
-h1{font-size:clamp(36px,6vw,64px);font-weight:800;letter-spacing:-.04em;line-height:1.08;margin-bottom:18px}
-.gr{background:linear-gradient(135deg,var(--p),var(--cy),var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero-p{font-size:17px;color:var(--m);max-width:600px;margin:0 auto 28px;font-weight:300;line-height:1.65}
+section { padding: 80px 24px; max-width: var(--max); margin: 0 auto; }
+@media (max-width: 720px) { section { padding: 60px 18px; } }
 
-/* Install box */
-.install{display:flex;justify-content:center;margin-bottom:50px}
-.install-box{background:rgba(0,0,0,.6);border:1px solid var(--b2);border-radius:12px;padding:16px 28px;display:flex;align-items:center;gap:16px;backdrop-filter:blur(20px)}
-.install-box code{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--g)}
-.install-box .dol{color:var(--dm);margin-right:4px}
-.copy-btn{background:var(--s2);border:1px solid var(--b);color:var(--m);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s}
-.copy-btn:hover{border-color:var(--p);color:var(--t)}
+.hero { padding: 140px 24px 80px; }
+.hero h1 { font-size: clamp(40px, 6vw, 64px); margin-bottom: 24px; }
+.hero h1 em { font-style: italic; color: var(--gold); }
+.hero .lede { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: clamp(20px, 2.2vw, 26px); color: var(--text); max-width: 680px; line-height: 1.5; margin-bottom: 32px; }
+.hero .install { background: var(--surface); border: 1px solid var(--border); padding: 16px 20px; font-family: 'DM Mono'; font-size: 15px; color: var(--gold); display: inline-block; margin-bottom: 20px; cursor: pointer; transition: all 0.2s; }
+.hero .install:hover { border-color: var(--gold); }
+.hero .install::before { content: '$ '; color: var(--muted); }
+.hero .ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+.btn { font-family: 'Syne'; font-weight: 700; padding: 14px 24px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; text-decoration: none; border: 1px solid var(--gold); display: inline-block; }
+.btn-primary { background: var(--gold); color: #0a0a0a; }
+.btn-primary:hover { background: var(--amber); border-color: var(--amber); color: #0a0a0a; }
+.btn-secondary { background: transparent; color: var(--text); border-color: var(--text); }
+.btn-secondary:hover { color: var(--gold); border-color: var(--gold); }
 
-/* Three APIs */
-.apis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:80px}
-.api-card{background:var(--s);border:1px solid var(--b);border-radius:16px;padding:32px;text-align:left;transition:all .3s;position:relative;overflow:hidden}
-.api-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s}
-.api-card:hover{transform:translateY(-3px)}.api-card:hover::before{opacity:1}
-.api-card:nth-child(1)::before{background:linear-gradient(90deg,var(--cy),var(--p))}
-.api-card:nth-child(1):hover{border-color:rgba(6,182,212,.3)}
-.api-card:nth-child(2)::before{background:linear-gradient(90deg,var(--p),var(--pk))}
-.api-card:nth-child(2):hover{border-color:rgba(139,92,246,.3)}
-.api-card:nth-child(3)::before{background:linear-gradient(90deg,var(--o),var(--pk))}
-.api-card:nth-child(3):hover{border-color:rgba(249,115,22,.3)}
-.api-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
-.api-card:nth-child(1) .api-tag{color:var(--cy)}
-.api-card:nth-child(2) .api-tag{color:var(--p)}
-.api-card:nth-child(3) .api-tag{color:var(--o)}
-.api-card h3{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:-.02em}
-.api-card .desc{font-size:13px;color:var(--m);line-height:1.6;margin-bottom:16px}
-.api-card .methods{display:flex;flex-direction:column;gap:4px}
-.method{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dm);padding:4px 0}
-.method b{color:var(--g);font-weight:500}
+.section-label { font-family: 'Syne'; font-weight: 700; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+.section-line { width: 60px; height: 1px; background: var(--gold); margin-bottom: 18px; }
+section h2 { font-size: clamp(30px, 4vw, 44px); margin-bottom: 16px; }
+section p.lede { font-family: 'Cormorant Garamond'; font-style: italic; font-size: 20px; color: var(--muted); margin-bottom: 32px; max-width: 700px; }
 
-/* Code examples */
-.code-section{margin-bottom:80px}
-.code-section h2{font-size:30px;font-weight:700;text-align:center;margin-bottom:32px;letter-spacing:-.03em}
-.code-tabs{display:flex;gap:4px;margin-bottom:0}
-.code-tab{padding:8px 18px;border-radius:10px 10px 0 0;background:var(--s2);color:var(--m);font-size:12px;cursor:pointer;border:none;font-family:inherit;font-weight:500;transition:all .2s}
-.code-tab.active{background:rgba(0,0,0,.6);color:var(--t)}
-.code-block{background:rgba(0,0,0,.6);border:1px solid var(--b);border-radius:0 10px 10px 10px;padding:24px;overflow-x:auto;backdrop-filter:blur(20px)}
-.code-block pre{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8}
-.c-m{color:var(--dm)}.c-k{color:var(--p)}.c-s{color:var(--g)}.c-f{color:var(--cy)}.c-n{color:var(--am)}.c-cm{color:rgba(255,255,255,.15)}
+.three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 36px; }
+@media (max-width: 720px) { .three { grid-template-columns: 1fr; } }
+.three .card { background: var(--surface); padding: 28px 24px; transition: all 0.2s; }
+.three .card:hover { background: var(--surface-2); }
+.three .card .num { font-family: 'Playfair Display'; font-size: 48px; color: var(--gold); line-height: 1; font-weight: 700; margin-bottom: 10px; }
+.three .card .name { font-family: 'Syne'; font-weight: 800; font-size: 20px; margin-bottom: 8px; }
+.three .card .what { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-/* Features row */
-.feats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:80px}
-.feat{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:20px;text-align:center;transition:border-color .2s}
-.feat:hover{border-color:rgba(139,92,246,.25)}
-.feat .ico{font-size:24px;margin-bottom:8px}
-.feat h4{font-size:13px;font-weight:600;margin-bottom:4px}
-.feat p{font-size:11px;color:var(--m);line-height:1.5}
+/* Try-it tabs */
+.tabs { display: flex; gap: 0; margin-bottom: 0; border: 1px solid var(--border); border-bottom: none; background: var(--surface); }
+.tab { font-family: 'Syne'; font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; padding: 16px 22px; background: transparent; border: none; color: var(--muted); cursor: pointer; transition: all 0.2s; flex: 1; }
+.tab:hover { color: var(--text); }
+.tab.active { background: var(--gold); color: #0a0a0a; }
+.tab-panel { background: var(--surface); border: 1px solid var(--border); padding: 28px; }
+.field { margin-bottom: 16px; }
+.field label { font-family: 'Syne'; font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 8px; }
+.field input, .field textarea, .field select { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 12px 14px; font-family: 'DM Mono'; font-size: 14px; line-height: 1.6; }
+.field input:focus, .field textarea:focus, .field select:focus { outline: 1px solid var(--gold); outline-offset: -1px; }
+.field textarea { min-height: 100px; resize: vertical; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+.demo-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+.tier-badge { font-family: 'DM Mono'; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; padding-left: 8px; }
+.tier-badge.t3 { color: var(--gold); }
+.demo-output { margin-top: 20px; padding: 18px; background: var(--bg); border-left: 2px solid var(--gold); font-family: 'DM Mono'; font-size: 13px; line-height: 1.7; display: none; }
+.demo-output.show { display: block; }
+.demo-output pre { white-space: pre-wrap; word-break: break-word; }
+.demo-output.error { border-left-color: var(--danger); color: var(--danger); }
 
-footer{padding:40px 0;border-top:1px solid var(--b);text-align:center}
-footer p{font-size:12px;color:var(--dm)}
-footer a{color:var(--p);text-decoration:none}
+code { background: var(--surface-2); padding: 2px 6px; border-radius: 2px; font-family: 'DM Mono'; font-size: 13px; }
+pre { background: var(--surface-2); padding: 18px 22px; overflow-x: auto; font-family: 'DM Mono'; font-size: 13px; line-height: 1.6; border-left: 2px solid var(--gold); margin-bottom: 22px; }
+pre .key { color: var(--info); }
+pre .str { color: var(--success); }
+pre .com { color: var(--muted); font-style: italic; }
 
-@media(max-width:768px){.apis,.feats{grid-template-columns:1fr}.install-box{flex-direction:column}}
+footer { background: #060606; border-top: 1px solid var(--border); padding: 48px 24px 36px; }
+.foot { max-width: var(--max); margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px; font-family: 'DM Mono'; font-size: 12px; color: var(--muted); }
+footer a { color: var(--gold); }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #0a0a0a; padding: 12px 22px; font-family: 'Syne'; font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; z-index: 200; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
+.note { font-family: 'Cormorant Garamond'; font-style: italic; color: var(--muted); font-size: 14px; line-height: 1.5; margin: 12px 0 0; }
 </style>
 </head>
 <body>
-<div class="mesh"><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
-<div class="rel">
-<div class="w">
 
-<!-- ─── TRILOGY TORUS NAV ─── -->
-<div style="background:rgba(255,255,255,.02);border-bottom:1px solid var(--b);backdrop-filter:blur(16px);margin-bottom:0">
-<div style="max-width:1100px;margin:0 auto;padding:8px 28px;display:flex;align-items:center;justify-content:space-between">
-  <span style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--m);text-transform:uppercase">Trilogy Ecosystem</span>
-  <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-    <a href="https://sjgant80-hub.github.io/docmind-api/" style="font-size:12px;font-weight:500;color:var(--m);text-decoration:none">DocMind</a>
-    <a href="https://sjgant80-hub.github.io/deep-api/" style="font-size:12px;font-weight:500;color:var(--m);text-decoration:none">Deep</a>
-    <a href="https://sjgant80-hub.github.io/flux-api/" style="font-size:12px;font-weight:500;color:var(--m);text-decoration:none">Flux</a>
-    <span style="color:var(--b);font-size:10px">|</span>
-    <a href="https://sjgant80-hub.github.io/trilogy-sdk/" style="font-size:12px;font-weight:600;color:var(--p);text-decoration:none;border-bottom:2px solid var(--p)">SDK</a>
-    <a href="https://sjgant80-hub.github.io/trilogy-framework/" style="font-size:12px;font-weight:500;color:var(--m);text-decoration:none">Framework</a>
-    <a href="https://sjgant80-hub.github.io/trilogy-forge/" style="font-size:12px;font-weight:500;color:var(--m);text-decoration:none">Forge</a>
-    <a href="https://sjgant80-hub.github.io/fallcube-api/" style="font-size:12px;font-weight:500;color:var(--m);text-decoration:none">Cube</a>
-    <span style="color:var(--b);font-size:10px">|</span>
-    <a href="https://sjgant80-hub.github.io/fallmesh/" style="font-size:12px;font-weight:500;color:#00d4aa;text-decoration:none">◊ Mesh</a>
+<header>
+  <div class="nav">
+    <a href="#top" class="brand">
+      <div class="brand-mark">◊</div>
+      <div class="brand-name">Trilogy <b>SDK</b></div>
+    </a>
+    <a href="https://www.ai-nativesolutions.com" class="nav-cta">← Hub</a>
   </div>
-</div>
-</div>
+</header>
 
-<nav>
-  <div class="logo"><span>trilogy</span>-sdk</div>
-  <div class="nav-r">
-    <a href="https://github.com/sjgant80-hub/trilogy-sdk">GitHub</a>
-    <a href="https://www.npmjs.com/package/trilogy-sdk">npm</a>
-    <a href="https://sjgant80-hub.github.io/trilogy-framework/">Framework</a>
+<main id="top">
+
+<section class="hero">
+  <h1>Three AI APIs.<br>One <em>npm install</em>.</h1>
+  <p class="lede">DocMind reads documents. Deep researches. Flux writes. The Trilogy SDK is the toolkit that fronts all three with one consistent TypeScript interface.</p>
+  <div class="install" id="installCmd" onclick="copyInstall()">npm install @sjgant80/trilogy-sdk</div>
+  <div class="ctas">
+    <a href="#try" class="btn btn-primary">Try it free</a>
+    <a href="https://github.com/sjgant80-hub/trilogy-sdk" target="_blank" class="btn btn-secondary">Source</a>
   </div>
-</nav>
+</section>
 
-<div class="hero">
-  <div class="chip">v1.0 — zero dependencies</div>
-  <h1>One install.<br><span class="gr">Three AI APIs.</span></h1>
-  <p class="hero-p">DocMind for documents. Deep for research. Flux for content. Full TypeScript. Retries built in. Ship in 5 minutes.</p>
-</div>
-
-<div class="install">
-  <div class="install-box">
-    <code><span class="dol">$</span> npm install trilogy-sdk</code>
-    <button class="copy-btn" onclick="navigator.clipboard.writeText('npm install trilogy-sdk');this.textContent='copied!';setTimeout(()=>this.textContent='copy',1500)">copy</button>
-  </div>
-</div>
-
-<div class="apis">
-  <div class="api-card">
-    <div class="api-tag">Input</div>
-    <h3>DocMind</h3>
-    <p class="desc">Documents in, structured data out. Receipts, invoices, bank statements, contracts.</p>
-    <div class="methods">
-      <div class="method"><b>doc.parse.</b>receipt(file)</div>
-      <div class="method"><b>doc.parse.</b>invoice(text)</div>
-      <div class="method"><b>doc.parse.</b>bankStatement(pdf)</div>
-      <div class="method"><b>doc.parse.</b>contract(buffer)</div>
-      <div class="method"><b>doc.</b>chat(messages)</div>
+<section>
+  <div class="section-line"></div>
+  <div class="section-label">§ I · the three</div>
+  <h2>One install. Three superpowers.</h2>
+  <div class="three">
+    <div class="card">
+      <div class="num">01</div>
+      <div class="name">DocMind</div>
+      <div class="what">Receipts, invoices, bank statements, contracts. Vision-powered structured extraction. Returns JSON.</div>
+    </div>
+    <div class="card">
+      <div class="num">02</div>
+      <div class="name">Deep</div>
+      <div class="what">Ask anything. Get a structured research report. Multi-source. Cited. JSON or markdown.</div>
+    </div>
+    <div class="card">
+      <div class="num">03</div>
+      <div class="name">Flux</div>
+      <div class="what">Long-form content engine. Blog posts, social media, email campaigns, ad copy. Brand voice baked in.</div>
     </div>
   </div>
-  <div class="api-card">
-    <div class="api-tag">Intelligence</div>
-    <h3>Deep</h3>
-    <p class="desc">Questions in, research reports out. Citations, fact-checking, entity comparison.</p>
-    <div class="methods">
-      <div class="method"><b>deep.</b>research(query)</div>
-      <div class="method"><b>deep.</b>quick(query)</div>
-      <div class="method"><b>deep.</b>factCheck(claims)</div>
-      <div class="method"><b>deep.</b>compare(entities)</div>
-      <div class="method"><b>deep.</b>extract(url)</div>
+</section>
+
+<section id="try">
+  <div class="section-line"></div>
+  <div class="section-label">§ II · try it now</div>
+  <h2>The interactive playground.</h2>
+  <p class="lede">No backend. Paste your own LLM key once · runs entirely in your browser · we never see it. <a style="color:var(--gold)" href="https://aistudio.google.com/apikey" target="_blank">Gemini is free</a>.</p>
+
+  <div class="field">
+    <label>Your LLM API key (Gemini · Anthropic · OpenAI · OpenRouter)</label>
+    <div class="field-row">
+      <select id="provider">
+        <option value="gemini">Gemini 2.0 Flash (free tier)</option>
+        <option value="anthropic">Anthropic Claude Haiku 4.5</option>
+        <option value="openai">OpenAI GPT-4o-mini</option>
+        <option value="openrouter">OpenRouter (any model)</option>
+      </select>
+      <input id="apiKey" type="password" placeholder="paste key · stays on your device">
     </div>
+    <p class="note">Stored only in this browser's localStorage. We don't have a server.</p>
   </div>
-  <div class="api-card">
-    <div class="api-tag">Output</div>
-    <h3>Flux</h3>
-    <p class="desc">Briefs in, content out. Blogs, threads, emails, ads, landing pages, SEO.</p>
-    <div class="methods">
-      <div class="method"><b>flux.generate.</b>blog(brief)</div>
-      <div class="method"><b>flux.generate.</b>thread(brief)</div>
-      <div class="method"><b>flux.generate.</b>email(brief)</div>
-      <div class="method"><b>flux.</b>repurpose(content)</div>
-      <div class="method"><b>flux.</b>brandVoice(samples)</div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="docmind">DocMind</button>
+    <button class="tab" data-tab="deep">Deep</button>
+    <button class="tab" data-tab="flux">Flux</button>
+  </div>
+
+  <!-- DocMind -->
+  <div class="tab-panel" id="panel-docmind">
+    <p style="margin-bottom:16px;color:var(--muted);font-size:14px">Paste any document text (receipt, invoice, contract). DocMind extracts structured data.</p>
+    <div class="field">
+      <label>Document text</label>
+      <textarea id="docText" placeholder='e.g. "Screwfix · 12 Acacia Ave · 47.82 GBP · Date: 15/03/2026 · VAT: 7.97"'></textarea>
     </div>
+    <div class="field">
+      <label>Schema (what to extract)</label>
+      <select id="docSchema">
+        <option value="receipt">Receipt (vendor · amount · date · category · vat)</option>
+        <option value="invoice">Invoice (from · to · line_items · total · due_date)</option>
+        <option value="contract">Contract (parties · effective_date · term · governing_law)</option>
+      </select>
+    </div>
+    <div class="demo-controls">
+      <button class="btn btn-primary" onclick="runDemo('docmind')">⇶ Extract</button>
+      <span class="tier-badge" id="docTier">paste key to begin</span>
+    </div>
+    <div class="demo-output" id="out-docmind"></div>
   </div>
-</div>
 
-<div class="code-section">
-  <h2>Code that writes itself</h2>
-  <div class="code-tabs">
-    <button class="code-tab active" onclick="showCode(0)">DocMind</button>
-    <button class="code-tab" onclick="showCode(1)">Deep</button>
-    <button class="code-tab" onclick="showCode(2)">Flux</button>
-    <button class="code-tab" onclick="showCode(3)">All Three</button>
+  <!-- Deep -->
+  <div class="tab-panel" id="panel-deep" style="display:none">
+    <p style="margin-bottom:16px;color:var(--muted);font-size:14px">Ask a research question. Deep returns structured findings.</p>
+    <div class="field">
+      <label>Your research question</label>
+      <textarea id="deepQ" placeholder='e.g. "What are the top 3 risks of going fully sovereign on infrastructure?"'></textarea>
+    </div>
+    <div class="field">
+      <label>Output format</label>
+      <select id="deepFormat">
+        <option value="report">Structured report (sections · sources · summary)</option>
+        <option value="bullets">5-bullet executive summary</option>
+        <option value="pros_cons">Pros/cons table</option>
+      </select>
+    </div>
+    <div class="demo-controls">
+      <button class="btn btn-primary" onclick="runDemo('deep')">⇶ Research</button>
+      <span class="tier-badge" id="deepTier">paste key to begin</span>
+    </div>
+    <div class="demo-output" id="out-deep"></div>
   </div>
-  <div class="code-block"><pre id="codeView"></pre></div>
-</div>
 
-<div class="feats">
-  <div class="feat"><div class="ico">&#128268;</div><h4>Zero Dependencies</h4><p>Uses native fetch. Nothing to install but the SDK itself.</p></div>
-  <div class="feat"><div class="ico">&#128260;</div><h4>Auto Retry</h4><p>Exponential backoff on 429s and 5xx. Configurable max retries.</p></div>
-  <div class="feat"><div class="ico">&#128221;</div><h4>Full TypeScript</h4><p>Complete type declarations. Autocomplete for every method and response.</p></div>
-  <div class="feat"><div class="ico">&#9889;</div><h4>SSE Streaming</h4><p>Stream deep research progress in real time. Step-by-step callbacks.</p></div>
-</div>
+  <!-- Flux -->
+  <div class="tab-panel" id="panel-flux" style="display:none">
+    <p style="margin-bottom:16px;color:var(--muted);font-size:14px">Brief in. Polished content out. Brand voice configurable.</p>
+    <div class="field">
+      <label>Topic / brief</label>
+      <textarea id="fluxBrief" placeholder='e.g. "LinkedIn post about why every business should ditch SaaS subscriptions and run sovereign tools"'></textarea>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Format</label>
+        <select id="fluxFormat">
+          <option value="linkedin">LinkedIn post (1200 chars)</option>
+          <option value="tweet">Tweet thread (5-7 tweets)</option>
+          <option value="blog">Blog intro (300 words)</option>
+          <option value="email">Email campaign (subject + body)</option>
+          <option value="ad">Ad copy (3 variants)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Voice</label>
+        <select id="fluxVoice">
+          <option value="direct">Direct · confident · sovereign</option>
+          <option value="casual">Casual · conversational</option>
+          <option value="formal">Formal · business · CFO-reads</option>
+          <option value="punchy">Punchy · short sentences · hot take</option>
+        </select>
+      </div>
+    </div>
+    <div class="demo-controls">
+      <button class="btn btn-primary" onclick="runDemo('flux')">⇶ Generate</button>
+      <span class="tier-badge" id="fluxTier">paste key to begin</span>
+    </div>
+    <div class="demo-output" id="out-flux"></div>
+  </div>
+</section>
 
-</div>
-</div>
+<section>
+  <div class="section-line"></div>
+  <div class="section-label">§ III · the code</div>
+  <h2>How you'd use it in production.</h2>
+  <pre><span class="com">// 1 · install</span>
+<span class="key">npm install</span> @sjgant80/trilogy-sdk
+
+<span class="com">// 2 · import</span>
+<span class="key">import</span> { Trilogy } <span class="key">from</span> <span class="str">'@sjgant80/trilogy-sdk'</span>;
+
+<span class="com">// 3 · BYOK — bring your own provider key</span>
+<span class="key">const</span> ai = <span class="key">new</span> Trilogy({ provider: <span class="str">'anthropic'</span>, apiKey: process.env.CLAUDE_KEY });
+
+<span class="com">// DocMind — extract structured data from any document</span>
+<span class="key">const</span> receipt = <span class="key">await</span> ai.docmind.extract(receiptText, { schema: <span class="str">'receipt'</span> });
+<span class="com">// → { vendor, amount, date, category, vat, items: [...] }</span>
+
+<span class="com">// Deep — get a structured research report</span>
+<span class="key">const</span> findings = <span class="key">await</span> ai.deep.research(question, { format: <span class="str">'report'</span>, sources: <span class="key">true</span> });
+<span class="com">// → { summary, sections: [...], sources: [...] }</span>
+
+<span class="com">// Flux — generate brand-aligned content</span>
+<span class="key">const</span> post = <span class="key">await</span> ai.flux.generate({ brief, format: <span class="str">'linkedin'</span>, voice: <span class="str">'direct'</span> });
+<span class="com">// → { content, hook, hashtags }</span></pre>
+
+  <p class="note">Full TypeScript types · zero runtime dependencies beyond your chosen LLM provider · MIT licence.</p>
+</section>
+
+<section>
+  <div class="section-line"></div>
+  <div class="section-label">§ IV · pricing</div>
+  <h2>Free. The SDK is yours.</h2>
+  <p class="lede">MIT licensed. The only cost is the underlying LLM calls — direct to your chosen provider, no markup, no rent.</p>
+  <p>Need a branded fork, custom schemas, or enterprise support? <a href="https://www.linkedin.com/in/simon-gant-295b56180/" style="color:var(--gold)" target="_blank">Talk to Simon</a> · or browse the rest of the estate at <a href="https://www.ai-nativesolutions.com" style="color:var(--gold)">ai-nativesolutions.com</a>.</p>
+</section>
+
+</main>
 
 <footer>
-  <p>
-    <a href="https://sjgant80-hub.github.io/docmind-api/">DocMind</a> &middot;
-    <a href="https://sjgant80-hub.github.io/deep-api/">Deep</a> &middot;
-    <a href="https://sjgant80-hub.github.io/flux-api/">Flux</a> &middot;
-    <a href="https://sjgant80-hub.github.io/trilogy-framework/" style="color:var(--o)">Framework</a> &middot;
-    <a href="https://sjgant80-hub.github.io/trilogy-forge/">Forge</a> &middot;
-    <a href="https://sjgant80-hub.github.io/fallcube-api/">Cube</a> &middot;
-    <a href="https://sjgant80-hub.github.io/fallmesh/" style="color:#00d4aa">◊ Mesh</a> &middot;
-    <a href="https://github.com/sjgant80-hub/trilogy-sdk">GitHub</a>
-    <br><br>
-    <span style="font-size:11px;color:var(--dm)">Part of the <a href="https://sjgant80-hub.github.io/trilogy-framework/" style="color:var(--p)">Trilogy</a> ecosystem &mdash; Input &rarr; Intelligence &rarr; Output</span>
-    <br><br>trilogy-sdk &copy; 2026
-  </p>
-  <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06)">
-    <p style="font-family:'JetBrains Mono','Geist Mono','Consolas',monospace;font-size:9px;letter-spacing:2px;color:rgba(212,168,67,.6);margin-bottom:6px">&#9674; POWERED BY KONOMI ARCHITECTURE &middot; &phi;&middot;&kappa;=1</p>
-    <p style="font-size:11px"><a href="https://aicraftspeopleguild.github.io/" target="_blank" style="color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s">&#9874; Member of the <span style="text-decoration:underline;text-underline-offset:3px">AI Craftspeople Guild</span></a></p>
+  <div class="foot">
+    <div>◊·κ=1 · Trilogy SDK · v1.0 · MIT · sovereign · single npm install</div>
+    <div><a href="https://www.ai-nativesolutions.com">AI Native Solutions</a> · <a href="https://github.com/sjgant80-hub/trilogy-sdk">GitHub</a></div>
   </div>
 </footer>
 
+<div class="toast" id="toast">·</div>
+
 <script>
-const codes=[
-`<span class="c-k">const</span> { DocMind } = <span class="c-f">require</span>(<span class="c-s">'trilogy-sdk'</span>);
+'use strict';
 
-<span class="c-k">const</span> doc = <span class="c-k">new</span> <span class="c-f">DocMind</span>(<span class="c-s">'dm_p_your_key'</span>, {
-  baseUrl: <span class="c-s">'https://your-docmind.railway.app'</span>
-});
+const STORE = 'trilogy-sdk-state';
+let state = { provider: 'gemini', apiKey: '' };
+try { const raw = localStorage.getItem(STORE); if (raw) state = Object.assign(state, JSON.parse(raw)); } catch (e) {}
+function saveState() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
 
-<span class="c-cm">// Parse a receipt image</span>
-<span class="c-k">const</span> receipt = <span class="c-k">await</span> doc.parse.<span class="c-f">receipt</span>(<span class="c-s">'./receipt.jpg'</span>);
-console.log(receipt.data.merchant);  <span class="c-cm">// "Tesco Express"</span>
-console.log(receipt.data.total);     <span class="c-cm">// 12.11</span>
-console.log(receipt.data.tax);       <span class="c-cm">// 2.02</span>
-console.log(receipt.data.items);     <span class="c-cm">// [{description: "Milk", ...}]</span>
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._to); t._to = setTimeout(() => t.classList.remove('show'), 1800); }
+function escHTML(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-<span class="c-cm">// Parse invoice from text</span>
-<span class="c-k">const</span> inv = <span class="c-k">await</span> doc.parse.<span class="c-f">invoice</span>(invoiceText);
-console.log(inv.data.line_items);    <span class="c-cm">// structured line items</span>`,
+document.getElementById('provider').value = state.provider;
+document.getElementById('apiKey').value = state.apiKey;
+document.getElementById('provider').addEventListener('change', e => { state.provider = e.target.value; saveState(); updateTiers(); });
+document.getElementById('apiKey').addEventListener('input', e => { state.apiKey = e.target.value.trim(); saveState(); updateTiers(); });
 
-`<span class="c-k">const</span> { Deep } = <span class="c-f">require</span>(<span class="c-s">'trilogy-sdk'</span>);
-
-<span class="c-k">const</span> deep = <span class="c-k">new</span> <span class="c-f">Deep</span>(<span class="c-s">'deep_p_your_key'</span>, {
-  baseUrl: <span class="c-s">'https://your-deep.railway.app'</span>
-});
-
-<span class="c-cm">// Stream research in real time</span>
-<span class="c-k">const</span> task = <span class="c-k">await</span> deep.<span class="c-f">research</span>(<span class="c-s">'AI agent frameworks 2026'</span>);
-<span class="c-k">const</span> report = <span class="c-k">await</span> task.<span class="c-f">stream</span>((step) => {
-  console.log(<span class="c-s">\`[\${step.step}] \${step.detail}\`</span>);
-  <span class="c-cm">// [planning] Breaking into 4 sub-questions...</span>
-  <span class="c-cm">// [searching] "AI agent frameworks comparison"</span>
-  <span class="c-cm">// [analyzing] Sub-question 1/4...</span>
-  <span class="c-cm">// [synthesizing] Compiling final report...</span>
-});
-
-<span class="c-cm">// Fact check claims</span>
-<span class="c-k">const</span> check = <span class="c-k">await</span> deep.<span class="c-f">factCheck</span>([<span class="c-s">'Earth is flat'</span>]);
-console.log(check.claims[<span class="c-n">0</span>].verdict); <span class="c-cm">// "false"</span>`,
-
-`<span class="c-k">const</span> { Flux } = <span class="c-f">require</span>(<span class="c-s">'trilogy-sdk'</span>);
-
-<span class="c-k">const</span> flux = <span class="c-k">new</span> <span class="c-f">Flux</span>(<span class="c-s">'flux_p_your_key'</span>, {
-  baseUrl: <span class="c-s">'https://your-flux.railway.app'</span>,
-  tone: <span class="c-s">'professional'</span>,
-  audience: <span class="c-s">'SaaS founders'</span>,
-});
-
-<span class="c-cm">// Generate a viral thread</span>
-<span class="c-k">const</span> thread = <span class="c-k">await</span> flux.generate.<span class="c-f">thread</span>(
-  <span class="c-s">'Why 90% of landing pages fail'</span>
-);
-console.log(thread.content.hook);   <span class="c-cm">// scroll-stopping first tweet</span>
-console.log(thread.content.tweets); <span class="c-cm">// array of tweets</span>
-
-<span class="c-cm">// Repurpose into every format</span>
-<span class="c-k">const</span> repurposed = <span class="c-k">await</span> flux.<span class="c-f">repurpose</span>(blogPost, {
-  targetTypes: [<span class="c-s">'twitter_thread'</span>, <span class="c-s">'linkedin_post'</span>, <span class="c-s">'email'</span>]
-});`,
-
-`<span class="c-k">const</span> { createTrilogy } = <span class="c-f">require</span>(<span class="c-s">'trilogy-sdk'</span>);
-
-<span class="c-cm">// One call, all three APIs</span>
-<span class="c-k">const</span> { docmind, deep, flux } = <span class="c-f">createTrilogy</span>({
-  docmind: <span class="c-s">'dm_p_...'</span>,
-  deep:    <span class="c-s">'deep_p_...'</span>,
-  flux:    <span class="c-s">'flux_p_...'</span>,
-});
-
-<span class="c-cm">// Pipeline: parse receipt → research vendor → generate report</span>
-<span class="c-k">const</span> receipt = <span class="c-k">await</span> docmind.parse.<span class="c-f">receipt</span>(<span class="c-s">'./receipt.jpg'</span>);
-<span class="c-k">const</span> vendor = <span class="c-k">await</span> deep.<span class="c-f">quick</span>(
-  <span class="c-s">\`Tell me about \${receipt.data.merchant}\`</span>
-);
-<span class="c-k">const</span> report = <span class="c-k">await</span> flux.generate.<span class="c-f">blog</span>(
-  <span class="c-s">\`Expense report: \${receipt.data.merchant}, \${receipt.data.total}\`</span>
-);`
-];
-function showCode(i){
-  document.querySelectorAll('.code-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
-  document.getElementById('codeView').innerHTML=codes[i];
+function updateTiers() {
+  const ready = !!state.apiKey;
+  const label = ready ? 'T3 · ' + state.provider + ' ready' : 'paste key to begin';
+  ['docTier', 'deepTier', 'fluxTier'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = label;
+    el.classList.toggle('t3', ready);
+  });
 }
-showCode(0);
-</script>
-<!-- ◊·κ FALLMESH SHIM — sovereign mesh wiring (generic, drop-in) -->
-<script>
-(function fallmeshShim(){
-  // Identity — each tool defines these. Defaults safe.
-  var NODE = window.NODE || {
-    id: (document.title || 'node').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,16) || 'node',
-    name: document.title || 'Node',
-    prime: 181
-  };
-  window.NODE = NODE;
+updateTiers();
 
-  var meshChannel = null;
-  function meshPost(type, data){
-    if (!meshChannel) return;
-    try {
-      meshChannel.postMessage(Object.assign(
-        { type: type, from: NODE.id, prime: NODE.prime, name: NODE.name, t: Date.now() },
-        data || {}
-      ));
-    } catch(e){}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('[id^="panel-"]').forEach(p => p.style.display = 'none');
+  document.getElementById('panel-' + t.dataset.tab).style.display = 'block';
+}));
+
+function copyInstall() {
+  navigator.clipboard.writeText('npm install @sjgant80/trilogy-sdk').then(() => toast('Copied'));
+}
+window.copyInstall = copyInstall;
+
+async function callLLM(prompt, maxTokens) {
+  maxTokens = maxTokens || 1200;
+  const k = state.apiKey;
+  if (!k) throw new Error('Paste an API key first');
+  const p = state.provider;
+  if (p === 'anthropic') {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': k, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error?.message || 'Anthropic error');
+    return d.content?.[0]?.text || '';
   }
-  if (typeof BroadcastChannel === 'undefined') return;
-  try { meshChannel = new BroadcastChannel('fallmesh'); } catch(e){ return; }
+  if (p === 'openai') {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + k },
+      body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error?.message || 'OpenAI error');
+    return d.choices?.[0]?.message?.content || '';
+  }
+  if (p === 'gemini') {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error?.message || 'Gemini error');
+    return d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  }
+  if (p === 'openrouter') {
+    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + k, 'HTTP-Referer': location.origin },
+      body: JSON.stringify({ model: 'anthropic/claude-haiku-4-5', messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error?.message || 'OpenRouter error');
+    return d.choices?.[0]?.message?.content || '';
+  }
+  throw new Error('Unknown provider');
+}
 
-  window.fallmesh = {
-    post: meshPost,
-    emit: function(data){ meshPost(NODE.id + ':event', data); },
-    request: function(type, payload){ meshPost('request:' + type, { payload: payload }); },
-    on: function(type, handler){
-      var prev = meshChannel.onmessage;
-      meshChannel.onmessage = function(e){
-        if (prev) try { prev(e); } catch(_){}
-        var m = e.data;
-        if (m && m.type === type && m.from !== NODE.id) handler(m);
+async function runDemo(kind) {
+  if (!state.apiKey) { toast('Paste an API key above'); return; }
+  const out = document.getElementById('out-' + kind);
+  out.classList.add('show');
+  out.classList.remove('error');
+  out.innerHTML = '<pre>calling ' + state.provider + '...</pre>';
+  try {
+    let prompt;
+    if (kind === 'docmind') {
+      const text = document.getElementById('docText').value.trim();
+      const schema = document.getElementById('docSchema').value;
+      if (!text) { out.innerHTML = '<pre>Paste a document first.</pre>'; return; }
+      const schemas = {
+        receipt: '{"vendor":"","amount":0,"currency":"","date":"YYYY-MM-DD","category":"tools|materials|fuel|vehicle|ppe|site|subcontractor|other","vat":0,"items":[{"description":"","qty":0,"price":0}]}',
+        invoice: '{"from":"","to":"","invoice_number":"","date":"YYYY-MM-DD","due_date":"YYYY-MM-DD","line_items":[{"description":"","qty":0,"rate":0,"total":0}],"subtotal":0,"vat":0,"total":0}',
+        contract: '{"parties":[""],"effective_date":"YYYY-MM-DD","term":"","governing_law":"","key_clauses":[""]}',
       };
+      prompt = 'You are DocMind from the Trilogy SDK. Extract from the document below into this JSON schema strictly. Reply ONLY with the JSON object, no other text.\n\nSchema:\n' + schemas[schema] + '\n\nDocument:\n' + text;
+    } else if (kind === 'deep') {
+      const q = document.getElementById('deepQ').value.trim();
+      const format = document.getElementById('deepFormat').value;
+      if (!q) { out.innerHTML = '<pre>Add a question first.</pre>'; return; }
+      const formats = {
+        report: 'Reply as JSON: { "summary": "2-3 sentence executive summary", "sections": [{"heading": "", "content": "1-paragraph analysis"}], "sources": ["named sources / reference points"] }',
+        bullets: 'Reply as JSON: { "bullets": ["point 1", "point 2", "point 3", "point 4", "point 5"] }',
+        pros_cons: 'Reply as JSON: { "pros": ["pro 1", "pro 2", "pro 3"], "cons": ["con 1", "con 2", "con 3"], "verdict": "1-sentence balanced takeaway" }',
+      };
+      prompt = 'You are Deep from the Trilogy SDK. Research the question rigorously and respond ONLY as JSON in the specified shape, no other text.\n\nFormat: ' + formats[format] + '\n\nQuestion: ' + q;
+    } else if (kind === 'flux') {
+      const brief = document.getElementById('fluxBrief').value.trim();
+      const format = document.getElementById('fluxFormat').value;
+      const voice = document.getElementById('fluxVoice').value;
+      if (!brief) { out.innerHTML = '<pre>Add a brief first.</pre>'; return; }
+      const formats = {
+        linkedin: 'LinkedIn post · 800-1500 chars · hook in first 2 lines · ends with question for engagement · 3-5 hashtags',
+        tweet: 'Twitter/X thread · 5-7 tweets · each under 280 chars · first tweet is the hook · last tweet has CTA',
+        blog: 'Blog intro · 300 words · sets up the problem · promises the payoff · ends with H1 of the main body',
+        email: 'Email campaign · subject line (under 60 chars) + body (under 200 words) + CTA',
+        ad: 'Three ad copy variants · each 30-50 words · different angle (problem · curiosity · urgency)',
+      };
+      const voices = {
+        direct: 'direct · confident · sovereign tools energy · no fluff · short sentences',
+        casual: 'casual · conversational · friendly · uses contractions',
+        formal: 'formal · business · CFO-reads · precise · no slang',
+        punchy: 'punchy · short sentences · hot-take · opinionated · attention-grabbing',
+      };
+      prompt = 'You are Flux from the Trilogy SDK. Generate content for:\n\nBrief: ' + brief + '\n\nFormat: ' + formats[format] + '\n\nVoice: ' + voices[voice] + '\n\nReply with just the content. No preamble.';
     }
-  };
-
-  meshChannel.onmessage = function(e){
-    var m = e.data;
-    if (!m || m.from === NODE.id) return;
-    if (m.type === 'mesh:ping') {
-      meshPost('mesh:pong', {
-        url: location.origin + location.pathname,
-        title: NODE.name
-      });
-    }
-  };
-
-  meshPost('node:online', {
-    url: location.origin + location.pathname,
-    layers: 7
-  });
-
-  try { console.log('%c◊·κ=1', 'color:#10b981;font-weight:bold;font-size:13px',
-    NODE.name + ' · prime ' + NODE.prime + ' · mesh online'); } catch(_){}
-})();
-</script>
-<!-- /◊·κ FALLMESH SHIM -->
-
-<!-- ◊·κ BLOOM + MCP ROUTING SHIM — text → 7-ring vector + MCP server selection
-     v1.0 · 2026-05-27 · ported from teslasolar/MissCassandra · MIT · cross-pollination
-     Aligned to v18/v19 seed: B(Q)=[r0..r6] · P(Q)=Π(p_i^r_i)
-     Spine primes: R0=2 R1=3 R2=5 R3=7 R4=11 R5=13 R6=17 -->
-<script>
-(function bloomShim(){
-  if (window.bloom && window.bloom._v >= 1) return; // already loaded
-  var PRIMES = [2n, 3n, 5n, 7n, 11n, 13n, 17n];
-  var RING_KEYS = ['R0','R1','R2','R3','R4','R5','R6'];
-  var RING_LABELS = ['ground','sensor','gate','affect','executive','identity','observer'];
-  var RING_COLORS = ['#660044','#00AAFF','#FFAA00','#FF4444','#44AA44','#AA44FF','#FFFFFF'];
-
-  var RING_WORDS = {
-    R0: ['help','fix','broken','down','deploy','server','build','run','start','stop','crash','restart','install','hardware','resource','gpu','cpu','torus','walker','kangaroo','solver','signal'],
-    R1: ['find','search','look','check','monitor','scan','watch','detect','alert','log','track','measure','notice','see','hear','observe','sense','pulse','probe','listen','heartbeat'],
-    R2: ['filter','block','allow','route','gate','triage','review','approve','reject','sort','prioritize','threshold','permission','consent','accept','validate','verify','consensus','vote'],
-    R3: ['feel','want','need','wish','hope','worry','love','hate','urgent','important','care','afraid','excited','angry','sad','heart','warmth','tone','resonance','consonance','dissonance'],
-    R4: ['plan','schedule','create','design','architect','organize','manage','build','draft','compose','write','structure','assign','orchestrate','dispatch','execute','swarm','deploy','workflow'],
-    R5: ['who','identity','role','config','team','culture','policy','value','name','profile','purpose','mission','represent','bloom','signature','tag','handle','self','kappa'],
-    R6: ['why','meta','review','reflect','pattern','observe','meaning','understand','analyze','systemic','philosophical','oracle','watcher','witness','field','katapayadi','recursion']
-  };
-
-  function decompose(text) {
-    if (!text || typeof text !== 'string') {
-      return { bloom: [0,0,0,0,0,0,0], product: 1n, normalized: [0,0,0,0,0,0,0], dominantRing: -1, dominantLabel: 'silence' };
-    }
-    var lower = text.toLowerCase();
-    var tokens = lower.split(/\s+/).filter(Boolean);
-    var counts = [0,0,0,0,0,0,0];
-    for (var r = 0; r < 7; r++) {
-      var words = RING_WORDS[RING_KEYS[r]];
-      for (var i = 0; i < words.length; i++) {
-        var entry = words[i];
-        if (entry.indexOf(' ') !== -1) {
-          if (lower.indexOf(entry) !== -1) counts[r]++;
-        } else {
-          for (var j = 0; j < tokens.length; j++) if (tokens[j] === entry) counts[r]++;
-        }
-      }
-    }
-    var product = 1n;
-    for (var k = 0; k < 7; k++) for (var n = 0; n < counts[k]; n++) product *= PRIMES[k];
-    var max = Math.max.apply(null, counts);
-    var normalized = max === 0 ? [0,0,0,0,0,0,0] : counts.map(function(c){return c / max;});
-    var maxIdx = 0;
-    for (var m = 1; m < 7; m++) if (counts[m] > counts[maxIdx]) maxIdx = m;
-    var dominantLabel = counts[maxIdx] === 0 ? 'silence' : RING_LABELS[maxIdx];
-    return { bloom: counts, product: product, normalized: normalized, dominantRing: counts[maxIdx] === 0 ? -1 : maxIdx, dominantLabel: dominantLabel };
-  }
-
-  function isBalanced(b) { var t = b.reduce(function(s,v){return s+v;},0); return t === 0 || b.every(function(v){return v/t <= 0.6;}); }
-  function isSpiked(b)   { var t = b.reduce(function(s,v){return s+v;},0); return t > 0 && b.some(function(v){return v/t > 0.7;}); }
-  function dominantRing(b) { var i = 0; for (var k = 1; k < b.length; k++) if (b[k] > b[i]) i = k; return b[i] === 0 ? -1 : i; }
-  function needsSearch(b, text) {
-    var t = b.reduce(function(s,v){return s+v;},0);
-    if (t === 0) return false;
-    var norm = b[1] / Math.max.apply(null, b);
-    return norm > 0.3 && /search|find|look up|what is|who is|latest|news|current/i.test(text);
-  }
-  function signature(text) {
-    var r = decompose(text);
-    return r.bloom.map(function(c,i){return 'R'+i+':'+c;}).join('|') + ' · Π=' + r.product.toString();
-  }
-
-  // ── MCP routing ───────────────────────────────────────────
-  var MCP_RULES = [
-    { idx:4, threshold:0.3, pattern:/linear|issue|ticket|task|bug|feature/i,    server:{type:'url',url:'https://mcp.linear.app/sse',name:'linear-mcp'} },
-    { idx:3, threshold:0.3, pattern:/email|mail|send|inbox/i,                  server:{type:'url',url:'https://gmail.mcp.claude.com/mcp',name:'gmail-mcp'} },
-    { idx:4, threshold:0.3, pattern:/calendar|schedule|meeting|event/i,         server:{type:'url',url:'https://gcal.mcp.claude.com/mcp',name:'gcal-mcp'} },
-    { idx:2, threshold:0.3, pattern:/jira|confluence|atlassian/i,               server:{type:'url',url:'https://mcp.atlassian.com/v1/sse',name:'atlassian-mcp'} },
-    { idx:0, threshold:0.3, pattern:/deploy|cloudflare|worker|pages/i,           server:{type:'url',url:'https://github.com/cloudflare/mcp-server-cloudflare',name:'cloudflare-mcp'} },
-    { idx:3, threshold:0.3, pattern:/intercom|customer|support/i,               server:{type:'url',url:'https://mcp.intercom.com/sse',name:'intercom-mcp'} },
-    { idx:0, threshold:0.3, pattern:/fallcore|proxy|on.?prem|sovereign/i,        server:{type:'local',url:'http://localhost:5510',name:'fallcore-mcp'} },
-    { idx:4, threshold:0.3, pattern:/reason|think|chain|prove|onlybrains/i,     server:{type:'url',url:'https://onlybrains.onrender.com/mcp',name:'onlybrains-mcp'} }
-  ];
-  function pickMCP(norm, text) {
-    var out = []; var seen = {};
-    if (!norm || !text) return out;
-    for (var i = 0; i < MCP_RULES.length; i++) {
-      var rule = MCP_RULES[i];
-      if (norm[rule.idx] > rule.threshold && rule.pattern.test(text) && !seen[rule.server.name]) {
-        out.push(rule.server);
-        seen[rule.server.name] = true;
-      }
-    }
-    return out;
-  }
-
-  // Expose
-  window.bloom = {
-    _v: 1,
-    decompose: decompose,
-    isBalanced: isBalanced,
-    isSpiked: isSpiked,
-    dominantRing: dominantRing,
-    needsSearch: needsSearch,
-    signature: signature,
-    pickMCP: pickMCP,
-    RING_KEYS: RING_KEYS,
-    RING_LABELS: RING_LABELS,
-    RING_COLORS: RING_COLORS,
-    PRIMES: [2,3,5,7,11,13,17]
-  };
-  try { console.log('%c◊·κ bloom', 'color:#4ecba0;font-weight:bold', 'v1 · text→[r0..r6] · window.bloom.decompose(text)'); } catch(_){}
-
-  // KCC ledger emission: tag every entry with its bloom signature
-  // Hook into existing kcc shim if present
-  setTimeout(function(){
-    if (window.kcc && window.kcc.emit && !window.kcc._bloomHooked) {
-      var origEmit = window.kcc.emit.bind(window.kcc);
-      window.kcc.emit = function(action, ring, weight, meta) {
+    const result = await callLLM(prompt);
+    if (kind === 'docmind' || kind === 'deep') {
+      // try to pretty-print JSON
+      const jsonMatch = result.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
         try {
-          if (action && typeof action === 'string') {
-            var sig = decompose(action);
-            meta = meta || {};
-            meta.bloom = sig.bloom;
-            meta.dominantRing = sig.dominantRing;
-          }
-        } catch(_){}
-        return origEmit(action, ring, weight, meta);
-      };
-      window.kcc._bloomHooked = true;
-    }
-  }, 500);
-})();
-</script>
-<!-- /◊·κ BLOOM + MCP ROUTING SHIM -->
-
-
-<!-- ◊·κ KONOMI LICENCE — Ed25519 (drop-in, no deps) -->
-<script>
-(function konomiShim(){
-  // NODE is defined by host tool's mesh shim. If missing, fail gracefully.
-  if (!window.NODE) return;
-  var KONOMI = window.KONOMI = {
-    pubkey_b64: 'bQWcb/SgeWVIEa0H+YYGhzohMfo9zcDysqZEvzYtXTw=',
-    tier: 'dead',
-    features: [],
-    payload: null,
-    expires_at: null
-  };
-  function b64Bytes(b64){ var bin=atob(b64); var b=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i); return b; }
-  function canonJSON(o){
-    if (o===null||typeof o!=='object') return JSON.stringify(o);
-    if (Array.isArray(o)) return '['+o.map(canonJSON).join(',')+']';
-    var k=Object.keys(o).sort();
-    return '{'+k.map(function(x){return JSON.stringify(x)+':'+canonJSON(o[x]);}).join(',')+'}';
-  }
-  async function verifyLicence(env){
-    if (!env) return { ok:false, error:'no envelope' };
-    if (!window.crypto || !window.crypto.subtle) return { ok:false, error:'no WebCrypto' };
-    try {
-      var raw = atob(env);
-      var parsed = JSON.parse(raw);
-      var payload = parsed.payload, sig = parsed.sig;
-      if (payload.tool_id && payload.tool_id !== NODE.id) {
-        return { ok:false, error:'licence for ' + payload.tool_id + ', not ' + NODE.id };
-      }
-      if (payload.expires && new Date(payload.expires) < new Date()) {
-        return { ok:false, error:'expired ' + payload.expires };
-      }
-      var pubRaw = b64Bytes(KONOMI.pubkey_b64);
-      var key = await crypto.subtle.importKey('raw', pubRaw, { name:'Ed25519' }, false, ['verify']);
-      var sigBytes = b64Bytes(sig);
-      var msg = new TextEncoder().encode(canonJSON(payload));
-      var ok = await crypto.subtle.verify({ name:'Ed25519' }, key, sigBytes, msg);
-      if (!ok) return { ok:false, error:'signature invalid' };
-      return { ok:true, payload:payload };
-    } catch (e) { return { ok:false, error:e.message }; }
-  }
-  async function activateLicence(env){
-    var v = await verifyLicence(env);
-    if (!v.ok) {
-      try { localStorage.setItem('konomi_last_error', v.error); } catch(_){}
-      return v;
-    }
-    try { localStorage.setItem('konomi_licence_' + NODE.id, env); } catch(_){}
-    KONOMI.tier = v.payload.tier;
-    KONOMI.features = v.payload.features || [];
-    KONOMI.payload = v.payload;
-    KONOMI.expires_at = v.payload.expires;
-    updateBadge();
-    return v;
-  }
-  function hasFeature(f){ return KONOMI.features.indexOf(f) >= 0; }
-  function isDead(){ return KONOMI.tier === 'dead'; }
-  function updateBadge(){
-    var el = document.getElementById('konomi-badge');
-    if (!el) return;
-    var t = KONOMI.tier;
-    var c = t==='dead'?'#8a8a8a':t==='trial'?'#c2a060':'#3a9a72';
-    el.textContent = '◊ ' + t.toUpperCase();
-    el.style.color = c;
-    el.title = 'Konomi tier: ' + t + (KONOMI.expires_at ? ' · expires ' + KONOMI.expires_at : '');
-  }
-  function injectBadge(){
-    if (document.getElementById('konomi-badge')) return;
-    var el = document.createElement('div');
-    el.id = 'konomi-badge';
-    el.style.cssText = 'position:fixed;bottom:12px;left:12px;background:rgba(0,0,0,.65);color:#8a8a8a;padding:5px 10px;border-radius:6px;font-family:monospace;font-size:11px;cursor:pointer;z-index:9999;letter-spacing:.06em;border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(6px)';
-    el.textContent = '◊ DEAD';
-    el.onclick = function(){ showLicenceDialog(); };
-    document.body.appendChild(el);
-  }
-  function showLicenceDialog(){
-    var current = KONOMI.payload ? JSON.stringify(KONOMI.payload, null, 2) : '(DEAD mode — no licence active)';
-    var modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:system-ui,sans-serif';
-    modal.innerHTML = '<div style="background:#161821;border:1px solid #2a2f3a;border-radius:12px;padding:24px;max-width:560px;width:100%;color:#dbe1ea"><h3 style="margin:0 0 12px;color:#e6e8ee">◊·κ Konomi Licence</h3><p style="margin:0 0 8px;font-size:12px;color:#8a8a8a">Tool: '+(NODE.name||NODE.id)+' · Prime: '+(NODE.prime||'-')+'</p><pre style="background:#0c0e12;padding:10px;border-radius:6px;font-size:11px;color:#a8b0bc;max-height:200px;overflow:auto;margin:8px 0">'+current.replace(/[<>]/g,'')+'</pre><p style="font-size:12px;color:#8a8a8a;margin:12px 0 6px">Paste a signed licence envelope to activate Pro/Business/Enterprise:</p><textarea id="kn-paste" style="width:100%;min-height:80px;background:#0c0e12;color:#dbe1ea;border:1px solid #2a2f3a;border-radius:6px;padding:8px;font-family:monospace;font-size:11px;resize:vertical"></textarea><div style="display:flex;gap:8px;margin-top:12px"><button id="kn-activate" style="background:#5b8def;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:600">activate</button><button id="kn-close" style="background:transparent;color:#8a8a8a;border:1px solid #2a2f3a;padding:8px 14px;border-radius:6px;cursor:pointer">close</button><span id="kn-msg" style="margin-left:auto;font-size:11px;color:#c84a4a;align-self:center"></span></div></div>';
-    document.body.appendChild(modal);
-    modal.querySelector('#kn-close').onclick = function(){ modal.remove(); };
-    modal.querySelector('#kn-activate').onclick = async function(){
-      var paste = modal.querySelector('#kn-paste').value.trim();
-      if (!paste) { modal.querySelector('#kn-msg').textContent = 'paste an envelope first'; return; }
-      var v = await activateLicence(paste);
-      if (v.ok) { modal.querySelector('#kn-msg').style.color='#3a9a72'; modal.querySelector('#kn-msg').textContent='✓ '+v.payload.tier+' activated'; setTimeout(function(){ modal.remove(); }, 1200); }
-      else { modal.querySelector('#kn-msg').textContent = 'rejected: ' + v.error; }
-    };
-    modal.onclick = function(e){ if (e.target===modal) modal.remove(); };
-  }
-  window.konomi = {
-    verifyLicence: verifyLicence,
-    activateLicence: activateLicence,
-    hasFeature: hasFeature,
-    isDead: isDead,
-    showDialog: showLicenceDialog
-  };
-  // Boot: try saved licence
-  (async function(){
-    if (document.readyState === 'loading') {
-      await new Promise(function(r){ document.addEventListener('DOMContentLoaded', r, { once:true }); });
-    }
-    injectBadge();
-    var saved = null;
-    try { saved = localStorage.getItem('konomi_licence_' + NODE.id); } catch(_){}
-    if (saved) {
-      var v = await verifyLicence(saved);
-      if (v.ok) {
-        KONOMI.tier = v.payload.tier;
-        KONOMI.features = v.payload.features || [];
-        KONOMI.payload = v.payload;
-        KONOMI.expires_at = v.payload.expires;
-        updateBadge();
-        try { console.log('%c◊·κ', 'color:#c2a060;font-weight:bold', NODE.name + ' · ' + v.payload.tier + ' tier active'); } catch(_){}
-        return;
-      }
-    }
-    try { console.log('%c◊', 'color:#8a8a8a;font-weight:bold', NODE.name + ' · DEAD mode · click badge to activate'); } catch(_){}
-  })();
-})();
-</script>
-<!-- /◊·κ KONOMI LICENCE -->
-
-<!-- ◊·κ KCC LEDGER v3 — Konomi Cube Coin + OnlyBrains client (drop-in, no deps) -->
-<!--
-  Ω(KCC) v18 · proof of contribution · not speculation
-    earn by: compute(R0)·signal(R1)·filter(R2)·care(R3)·build(R4)·verify(R5)·govern(R6)
-    spend: you don't · KCC accumulates · revenue finds you
-    ledger: tools themselves · local-first + OnlyBrains REST anchor
-    bloom IS identity · the shape of your contribution IS your address
-
-  OnlyBrains REST client exposed on window.kcc:
-    .reason(problem, strategy?)   → POST /api/reason       · 10 $KONO · 7 strategies
-    .oracle()                     → POST /api/fn/exec ORACLE · 5 $KONO
-    .anchor(type, params)         → POST /api/fn/exec     · varies · BSV chain anchor
-    .mintNft(id, mime, hash, meta)→ POST /api/fn/exec NFT · 100 $KONO
-    .queryTags(q?)                → GET  /api/tags        · 1 $KONO
-    .quote(model, tokens, asset)  → GET  /api/xchg/quote  · free
-    .swap(model, tokens, asset)   → POST /api/xchg/swap   · 0 $KONO (it's the swap)
-    .rates() / .tiers() / .chain() / .wallet() / .syncOnlyBrains() / .fnList()
-
-  Mesh: 4 BroadcastChannels (fall-kcc + kcc-mesh + onlybrains-mesh + ass-os-mesh)
-  Depends on: window.NODE (mesh shim)
--->
-<script>
-(function kccShim(){
-  if (!window.NODE) return;
-  var KCC_KEY = 'kcc_ledger_' + (window.NODE.id || 'node') + '_v1';
-  var ONLYBRAINS_API = 'https://onlybrains.onrender.com';
-
-  // ── ring map · canonical (anatomy + earning verbs) ──
-  var RINGS = [
-    { i:0, v:'R0', anat:'ground',  verb:'compute', hz:'7.83',  colour:'#B42838' },
-    { i:1, v:'R1', anat:'signal',  verb:'signal',  hz:'15.66', colour:'#008CC8' },
-    { i:2, v:'R2', anat:'gate',    verb:'filter',  hz:'23.49', colour:'#DCA030' },
-    { i:3, v:'R3', anat:'heart',   verb:'care',    hz:'31.32', colour:'#28B450' },
-    { i:4, v:'R4', anat:'voice',   verb:'build',   hz:'39.15', colour:'#5078DC' },
-    { i:5, v:'R5', anat:'mirror',  verb:'verify',  hz:'46.98', colour:'#8C50C8' },
-    { i:6, v:'R6', anat:'watcher', verb:'govern',  hz:'54.81', colour:'#787878' }
-  ];
-
-  function getKccKey(){
-    try {
-      var k = localStorage.getItem('kcc-key');
-      if (!k) {
-        k = 'kcc-' + Array.from(crypto.getRandomValues(new Uint8Array(4)))
-          .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-        localStorage.setItem('kcc-key', k);
-      }
-      return k;
-    } catch(_){ return 'kcc-anon'; }
-  }
-  var KEY = getKccKey();
-
-  var LEDGER = { events:[], head:null, last_export:null, ob_balance:null, ob_last_sync:null, anchors:[] };
-  try {
-    var raw = localStorage.getItem(KCC_KEY);
-    if (raw) LEDGER = Object.assign(LEDGER, JSON.parse(raw));
-  } catch(_){}
-  function persist(){ try { localStorage.setItem(KCC_KEY, JSON.stringify(LEDGER)); } catch(_){} }
-
-  function canon(o){
-    if (o===null||typeof o!=='object') return JSON.stringify(o);
-    if (Array.isArray(o)) return '['+o.map(canon).join(',')+']';
-    var k=Object.keys(o).sort();
-    return '{'+k.map(function(x){return JSON.stringify(x)+':'+canon(o[x]);}).join(',')+'}';
-  }
-  function fnv1a(str){
-    var h = 2166136261 >>> 0;
-    for (var i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = (h + ((h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24))) >>> 0; }
-    return ('00000000'+h.toString(16)).slice(-8);
-  }
-
-  function emit(action, ringId, weight, meta){
-    var ring = typeof ringId === 'number' ? ringId : (RINGS.findIndex(function(r){ return r.verb===ringId || r.anat===ringId || r.v===ringId; }));
-    if (ring < 0 || ring > 6) ring = 0;
-    var ev = {
-      v: 1,
-      tool: window.NODE.id,
-      tool_prime: window.NODE.prime,
-      action: String(action || 'event'),
-      ring: ring,
-      weight: typeof weight === 'number' ? weight : 1,
-      t: Date.now(),
-      prev: LEDGER.head || null,
-      meta: meta || null
-    };
-    ev.h = fnv1a(canon(ev) + (LEDGER.head || ''));
-    LEDGER.events.push(ev);
-    LEDGER.head = ev.h;
-    persist();
-    if (window.kccChannels) {
-      window.kccChannels.forEach(function(ch){
-        try { ch.postMessage({ source: NODE.id, type:'kcc:event', from:NODE.id, prime:NODE.prime, ts:Date.now(), ev:ev }); } catch(_){}
-      });
-    }
-    updateBadge();
-    return ev;
-  }
-
-  function bloom(){
-    var b = [0,0,0,0,0,0,0];
-    LEDGER.events.forEach(function(ev){ b[ev.ring] = (b[ev.ring] || 0) + (ev.weight || 1); });
-    return b;
-  }
-  function shape(){
-    var b = bloom();
-    var sum = b.reduce(function(a,x){ return a+x; }, 0);
-    var peak = b.indexOf(Math.max.apply(null, b));
-    var name = sum === 0 ? 'unbloomed' : RINGS[peak].verb;
-    return { vec:b, sum:sum, peak:peak, peakRing:RINGS[peak], shape:name };
-  }
-
-  function exportProof(opts){
-    opts = opts || {};
-    var payload = {
-      v: 1, tool: NODE.id, tool_prime: NODE.prime, tool_name: NODE.name,
-      issued: new Date().toISOString(),
-      event_count: LEDGER.events.length, head: LEDGER.head,
-      bloom: bloom(), shape: shape(), kcc_key: KEY,
-      onlybrains_balance: LEDGER.ob_balance,
-      anchors_count: (LEDGER.anchors || []).length
-    };
-    if (opts.includeEvents) payload.events = LEDGER.events;
-    if (opts.includeAnchors) payload.anchors = LEDGER.anchors;
-    LEDGER.last_export = Date.now();
-    persist();
-    return payload;
-  }
-
-  // ── OnlyBrains REST client ────────────────────
-  function _withTimeout(promise, ms) {
-    var ctrl = new AbortController();
-    var t = setTimeout(function(){ ctrl.abort(); }, ms || 8000);
-    return { ctrl: ctrl, done: function(){ clearTimeout(t); } };
-  }
-  function _get(path, ms) {
-    var x = _withTimeout(null, ms);
-    return fetch(ONLYBRAINS_API + path + (path.indexOf('?')>=0?'&':'?') + 'key=' + encodeURIComponent(KEY), { signal: x.ctrl.signal })
-      .then(function(r){ x.done(); return r.json(); })
-      .catch(function(e){ x.done(); return { error: e.name === 'AbortError' ? 'timeout' : (e.message || 'fetch failed') }; });
-  }
-  function _post(path, body, ms) {
-    var x = _withTimeout(null, ms);
-    return fetch(ONLYBRAINS_API + path + (path.indexOf('?')>=0?'&':'?') + 'key=' + encodeURIComponent(KEY), {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.assign({ key: KEY }, body || {})),
-      signal: x.ctrl.signal
-    }).then(function(r){ x.done(); return r.json(); })
-      .catch(function(e){ x.done(); return { error: e.name === 'AbortError' ? 'timeout' : (e.message || 'fetch failed') }; });
-  }
-
-  // Wallet sync · fire-and-forget · short timeout
-  function syncOnlyBrains(){
-    return _get('/api/wallet', 4500).then(function(w){
-      if (w && typeof w.balance !== 'undefined') {
-        LEDGER.ob_balance = { balance: w.balance, mined: w.mined, calls: w.calls };
-        LEDGER.ob_last_sync = Date.now();
-        persist();
-        updateBadge();
-      }
-      return w;
-    });
-  }
-
-  // 7-strategy structured reasoning · 10 $KONO each
-  function reason(problem, strategy) {
-    if (!problem) return Promise.resolve({ error: 'problem required' });
-    var p = _post('/api/reason', { problem: problem, strategy: strategy || 'CoT' }, 45000);
-    emit('ob:reason:' + (strategy || 'CoT'), 5, 1.5, { problem: String(problem).slice(0, 80) });
-    return p.then(function(r){
-      if (r && !r.error) {
-        LEDGER.anchors = LEDGER.anchors || [];
-        LEDGER.anchors.push({ kind:'reason', strategy: strategy || 'CoT', at: Date.now(), result: r });
-        if (LEDGER.anchors.length > 50) LEDGER.anchors = LEDGER.anchors.slice(-50);
-        persist();
-        // refresh wallet to reflect new cost
-        setTimeout(syncOnlyBrains, 800);
-      }
-      return r;
-    });
-  }
-
-  // Generic BSV chain anchor via /api/fn/exec
-  function anchor(type, params) {
-    if (!type) return Promise.resolve({ error: 'type required' });
-    var p = _post('/api/fn/exec', { type: String(type).toUpperCase(), params: params || {} }, 30000);
-    var ring = type === 'STATE' || type === 'TRADE' ? 6 : type === 'ALARM' ? 2 : type === 'KPI' ? 5 : 4;
-    emit('ob:anchor:' + String(type).toLowerCase(), ring, 2, { type: type });
-    return p.then(function(r){
-      if (r && !r.error) {
-        LEDGER.anchors = LEDGER.anchors || [];
-        LEDGER.anchors.push({ kind:'anchor', type: type, at: Date.now(), params: params, result: r });
-        if (LEDGER.anchors.length > 50) LEDGER.anchors = LEDGER.anchors.slice(-50);
-        persist();
-        setTimeout(syncOnlyBrains, 800);
-      }
-      return r;
-    });
-  }
-
-  // Convenience: price oracle snapshot · 5 $KONO
-  function oracle(opts) {
-    var defaults = { BTC: true, BSV: true, ETH: true, SOL: true };
-    return anchor('ORACLE', Object.assign(defaults, opts || {}));
-  }
-
-  // Convenience: mint a 4D tesseract NFT · 100 $KONO
-  function mintNft(id, mime, hash, meta) {
-    return anchor('NFT', {
-      id: id || ('nft-' + NODE.id + '-' + Date.now()),
-      mime: mime || 'application/json',
-      hash: hash || fnv1a(canon(meta || {})),
-      meta: meta || ('Forged by ' + NODE.name + ' · prime ' + NODE.prime)
-    });
-  }
-
-  // Quote / swap / rates / tiers / chain / fnList / queryTags
-  function quote(model, tokens, asset) {
-    return _get('/api/xchg/quote?model=' + encodeURIComponent(model || 'anthropic') + '&tokens=' + (tokens || 1000) + '&asset=' + (asset || 'reason'), 8000);
-  }
-  function swap(model, tokens, asset) {
-    return _post('/api/xchg/swap', { model: model || 'anthropic', tokens: tokens || 1000, asset: asset || 'reason' }, 12000)
-      .then(function(r){ if (r && !r.error) setTimeout(syncOnlyBrains, 800); return r; });
-  }
-  function rates() { return _get('/api/xchg/rates', 8000); }
-  function tiers() { return _get('/api/tiers', 8000); }
-  function chain() { return _get('/api/chain', 8000); }
-  function fnList() { return _get('/api/fn/list', 8000); }
-  function wallet() { return _get('/api/wallet', 8000); }
-  function queryTags(q) { return _get('/api/tags' + (q ? '?q=' + encodeURIComponent(q) : ''), 10000); }
-
-  // ── Floating badge ───────────────────────────
-  var bloomBadge = null;
-  function injectBadge(){
-    if (document.getElementById('kcc-badge')) return;
-    var el = document.createElement('div');
-    el.id = 'kcc-badge';
-    el.style.cssText = 'position:fixed;bottom:12px;left:120px;background:rgba(0,0,0,.65);color:#dbe1ea;padding:5px 10px;border-radius:6px;font-family:monospace;font-size:11px;cursor:pointer;z-index:9999;letter-spacing:.06em;border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px';
-    el.title = 'KCC ledger · OnlyBrains-linked';
-    el.onclick = function(){ showLedger(); };
-    document.body.appendChild(el);
-    bloomBadge = el;
-    updateBadge();
-  }
-  function updateBadge(){
-    if (!bloomBadge) return;
-    var b = bloom();
-    var sum = b.reduce(function(a,x){ return a+x; }, 0);
-    var sparks = b.map(function(v, i){
-      var sz = Math.min(11, 2 + Math.round(v/2));
-      return '<span style="display:inline-block;width:3px;height:'+sz+'px;background:'+RINGS[i].colour+';margin:0 1px;border-radius:1px;vertical-align:middle"></span>';
-    }).join('');
-    var ob = (LEDGER.ob_balance && LEDGER.ob_balance.balance !== undefined)
-      ? ' · <span style="color:#d4af37">$KONO ' + LEDGER.ob_balance.balance + '</span>'
-      : '';
-    bloomBadge.innerHTML = '<span style="opacity:.7">KCC</span> '+sparks+' <span style="opacity:.85">'+sum+'</span>'+ob;
-  }
-
-  // ── Ledger modal with OnlyBrains actions ────
-  function showLedger(){
-    var b = bloom();
-    var sh = shape();
-    var rows = RINGS.map(function(r, i){
-      var v = b[i];
-      var pct = sh.sum ? Math.round(v/sh.sum*100) : 0;
-      return '<tr><td style="color:'+r.colour+';padding:4px 0;font-weight:600">'+r.v+'</td><td>'+r.anat+'</td><td style="color:#8a8a8a">'+r.verb+'</td><td>'+r.hz+' Hz</td><td style="text-align:right;font-weight:700">'+v+'</td><td style="color:#8a8a8a">'+pct+'%</td></tr>';
-    }).join('');
-    var recent = LEDGER.events.slice(-6).reverse().map(function(ev){
-      var d = new Date(ev.t).toLocaleString();
-      return '<div style="font-size:11px;color:#a8b0bc;padding:2px 0">'+d+' · <span style="color:'+RINGS[ev.ring].colour+';font-weight:600">'+RINGS[ev.ring].v+'</span> · '+ev.action+(ev.weight!==1?' ×'+ev.weight:'')+'</div>';
-    }).join('') || '<div style="color:#8a8a8a;font-size:12px;padding:6px 0">no events yet</div>';
-    var anchorsHtml = (LEDGER.anchors || []).slice(-5).reverse().map(function(a){
-      var d = new Date(a.at).toLocaleString();
-      var label = a.kind === 'reason' ? ('reason · ' + a.strategy) : (a.kind + ' · ' + a.type);
-      return '<div style="font-size:10px;color:#a8b0bc;padding:2px 0"><span style="color:#d4af37">'+d+'</span> · '+label+'</div>';
-    }).join('') || '<div style="color:#8a8a8a;font-size:11px;padding:4px 0">no OnlyBrains calls yet</div>';
-    var bal = LEDGER.ob_balance ? LEDGER.ob_balance.balance : '—';
-    var obSection = '<div style="background:#0c0e12;border:1px solid #2a2f3a;border-radius:8px;padding:10px;margin:10px 0;font-size:12px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="color:#d4af37;font-weight:700">$KONO ' + bal + '</div><div style="color:#8a8a8a;font-size:10px">key <code>'+KEY+'</code></div></div><button id="kcc-sync" style="background:transparent;color:#d4af37;border:1px solid #d4af37;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px">sync</button></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"><button data-act="reason"  style="background:#1f2937;color:#dbe1ea;border:1px solid #374151;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:11px" title="10 $KONO">🧠 reason</button><button data-act="oracle"  style="background:#1f2937;color:#dbe1ea;border:1px solid #374151;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:11px" title="5 $KONO">🔮 oracle</button><button data-act="anchor"  style="background:#1f2937;color:#dbe1ea;border:1px solid #374151;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:11px" title="varies">⚓ anchor</button><button data-act="nft"     style="background:#1f2937;color:#dbe1ea;border:1px solid #374151;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:11px" title="100 $KONO">🎴 mint NFT</button><button data-act="rates"   style="background:#1f2937;color:#dbe1ea;border:1px solid #374151;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:11px" title="free">📊 rates</button><button data-act="quote"   style="background:#1f2937;color:#dbe1ea;border:1px solid #374151;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:11px" title="free">💱 quote</button><button data-act="chain"   style="background:#1f2937;color:#dbe1ea;border:1px solid #374151;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:11px" title="free">⛓️ chain</button><button data-act="tags"    style="background:#1f2937;color:#dbe1ea;border:1px solid #374151;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:11px" title="1 $KONO">🏷️ tags</button></div><div id="kcc-ob-result" style="margin-top:8px;font-size:10px;color:#8a8a8a;max-height:120px;overflow:auto;font-family:monospace;display:none;background:#06080c;border:1px solid #1f2937;border-radius:4px;padding:6px"></div></div>';
-    var modal = document.createElement('div');
-    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:system-ui,sans-serif';
-    modal.innerHTML='<div style="background:#161821;border:1px solid #2a2f3a;border-radius:12px;padding:22px;max-width:620px;width:100%;color:#dbe1ea;max-height:90vh;overflow:auto"><h3 style="margin:0 0 4px;color:#e6e8ee">◊·κ KCC Ledger · OnlyBrains</h3><p style="margin:0 0 10px;font-size:12px;color:#8a8a8a">'+window.NODE.name+' · prime '+window.NODE.prime+' · shape: '+sh.shape+' · '+sh.sum+' events</p>'+obSection+'<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px"><thead><tr style="border-bottom:1px solid #2a2f3a"><th style="text-align:left;padding:6px 0">ring</th><th style="text-align:left">anat</th><th style="text-align:left">verb</th><th style="text-align:left">Hz</th><th style="text-align:right">n</th><th>%</th></tr></thead><tbody>'+rows+'</tbody></table><h4 style="font-size:11px;color:#8a8a8a;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 4px">recent events</h4>'+recent+'<h4 style="font-size:11px;color:#8a8a8a;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 4px">recent OnlyBrains calls</h4>'+anchorsHtml+'<div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap"><button id="kcc-export" style="background:#5b8def;color:#fff;border:none;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">export proof</button><button id="kcc-close" style="background:transparent;color:#8a8a8a;border:1px solid #2a2f3a;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px">close</button><span style="margin-left:auto;align-self:center;font-size:11px;color:#8a8a8a">head: <code>'+(LEDGER.head||'∅')+'</code></span></div></div>';
-    document.body.appendChild(modal);
-    var resultEl = modal.querySelector('#kcc-ob-result');
-    function showResult(label, data){
-      resultEl.style.display = 'block';
-      var s = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
-      if (s.length > 4000) s = s.slice(0, 4000) + '\n…';
-      resultEl.textContent = '> ' + label + '\n' + s;
-    }
-    modal.querySelector('#kcc-close').onclick = function(){ modal.remove(); };
-    modal.querySelector('#kcc-sync').onclick = function(){
-      showResult('syncing wallet…', '');
-      syncOnlyBrains().then(function(w){ showResult('wallet', w); modal.remove(); showLedger(); });
-    };
-    modal.querySelector('#kcc-export').onclick = function(){
-      var p = exportProof({ includeEvents:true, includeAnchors:true });
-      var blob = new Blob([JSON.stringify(p, null, 2)], { type:'application/json' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a'); a.href = url; a.download = NODE.id + '-kcc-proof-' + Date.now() + '.json'; a.click();
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-    };
-    modal.querySelectorAll('button[data-act]').forEach(function(btn){
-      btn.onclick = function(){
-        var act = btn.getAttribute('data-act');
-        if (act === 'reason') {
-          var problem = prompt('What problem? (10 $KONO)');
-          if (!problem) return;
-          var strat = prompt('Strategy? (CoT / ToT / GoT / BoT / SelfAsk / ReAct / Reflexion)', 'CoT');
-          showResult('reason: ' + strat, 'thinking…');
-          reason(problem, strat).then(function(r){ showResult('reason · ' + strat, r); });
-        } else if (act === 'oracle') {
-          showResult('oracle (5 $KONO)', 'fetching…');
-          oracle().then(function(r){ showResult('oracle', r); });
-        } else if (act === 'anchor') {
-          var type = prompt('Anchor type? (STATE / KPI / ALARM / TRADE / ASSET / SVG)', 'STATE');
-          if (!type) return;
-          var paramsStr = prompt('Params JSON (e.g. {"equip":"X","from":"idle","to":"run","mode":"auto"})', '{}');
-          var params; try { params = JSON.parse(paramsStr || '{}'); } catch(e){ alert('invalid JSON'); return; }
-          showResult('anchor · ' + type, 'anchoring to BSV…');
-          anchor(type, params).then(function(r){ showResult('anchor · ' + type, r); });
-        } else if (act === 'nft') {
-          var meta = prompt('NFT meta (100 $KONO)', NODE.name + ' · prime ' + NODE.prime);
-          if (!meta) return;
-          showResult('mint NFT', 'minting…');
-          mintNft(null, null, null, meta).then(function(r){ showResult('NFT minted', r); });
-        } else if (act === 'rates') {
-          showResult('rates', 'fetching…');
-          rates().then(function(r){ showResult('rates', r); });
-        } else if (act === 'quote') {
-          showResult('quote · anthropic 10k → reason', 'fetching…');
-          quote('anthropic', 10000, 'reason').then(function(r){ showResult('quote', r); });
-        } else if (act === 'chain') {
-          showResult('chain', 'fetching…');
-          chain().then(function(r){ showResult('chain', r); });
-        } else if (act === 'tags') {
-          showResult('tags', 'fetching…');
-          queryTags().then(function(r){ showResult('tags', r); });
-        }
-      };
-    });
-    modal.onclick = function(e){ if (e.target===modal) modal.remove(); };
-  }
-
-  // ── 4-channel mesh interop ──
-  var CHANNEL_NAMES = ['fall-kcc', 'kcc-mesh', 'onlybrains-mesh', 'ass-os-mesh'];
-  window.kccChannels = [];
-  CHANNEL_NAMES.forEach(function(name){
-    try {
-      var ch = new BroadcastChannel(name);
-      window.kccChannels.push(ch);
-      ch.onmessage = function(e){
-        var m = e.data;
-        if (!m || m.from === NODE.id || m.source === NODE.id) return;
-        if (window.KCC_LISTEN && (m.type === 'kcc:event')) {
-          emit('observed:' + (m.from || m.source || 'peer'), 1, 0.1, { ev_h: m.ev && m.ev.h, channel: name });
-        }
-      };
-    } catch(_){}
-  });
-  if (window.kccChannels.length > 0) window.kccChannel = window.kccChannels[0];
-
-  // ── Quarterly bloom report (formal cognitive contribution statement) ──
-  function exportBloomReport(opts){
-    opts = opts || {};
-    var quarterStart = opts.since || (function(){
-      var d = new Date(); var q = Math.floor(d.getMonth() / 3);
-      return new Date(d.getFullYear(), q * 3, 1).getTime();
-    })();
-    var quarterEnd = opts.until || Date.now();
-    var qEvents = LEDGER.events.filter(function(e){ return e.t >= quarterStart && e.t <= quarterEnd; });
-    var qBloom = [0,0,0,0,0,0,0];
-    var topActions = {};
-    var anchoredCount = 0;
-    qEvents.forEach(function(ev){
-      qBloom[ev.ring] = (qBloom[ev.ring] || 0) + (ev.weight || 1);
-      topActions[ev.action] = (topActions[ev.action] || 0) + (ev.weight || 1);
-    });
-    (LEDGER.anchors || []).forEach(function(a){ if (a.at >= quarterStart && a.at <= quarterEnd) anchoredCount++; });
-    var totalEvents = qEvents.length;
-    var totalContribution = qBloom.reduce(function(a,x){ return a+x; }, 0);
-    var peakIdx = qBloom.indexOf(Math.max.apply(null, qBloom));
-    var shapeName = totalContribution === 0 ? 'unbloomed' : RINGS[peakIdx].verb;
-    var primesProduct = (function(){
-      var primes = [2,3,5,7,11,13,17];
-      var prod = 1n;
-      for (var i = 0; i < 7; i++) for (var j = 0; j < Math.floor(qBloom[i]); j++) prod *= BigInt(primes[i]);
-      return prod.toString();
-    })();
-    var startDate = new Date(quarterStart).toISOString().slice(0,10);
-    var endDate = new Date(quarterEnd).toISOString().slice(0,10);
-    var topList = Object.entries(topActions).sort(function(a,b){ return b[1]-a[1]; }).slice(0, 10);
-
-    var format = opts.format || 'markdown';
-    if (format === 'json') {
-      var payload = {
-        v: 1, type: 'bloom_quarterly_report',
-        tool: NODE.id, tool_name: NODE.name, tool_prime: NODE.prime,
-        period: { from: startDate, to: endDate, ms: quarterEnd - quarterStart },
-        bloom_vec: qBloom, bloom_sum: totalContribution, bloom_shape: shapeName,
-        peak_ring: RINGS[peakIdx],
-        prime_product: primesProduct,
-        events_total: totalEvents,
-        anchors_total: anchoredCount,
-        top_actions: topList,
-        kcc_key: KEY,
-        onlybrains_balance: LEDGER.ob_balance,
-        issued_at: new Date().toISOString()
-      };
-      return payload;
-    }
-
-    // Markdown report
-    var lines = [];
-    lines.push('# ◊·κ Quarterly Bloom Report');
-    lines.push('');
-    lines.push('**Tool:** ' + NODE.name + ' · prime ' + NODE.prime + ' · `' + NODE.id + '`');
-    lines.push('**Period:** ' + startDate + ' → ' + endDate);
-    lines.push('**Issued:** ' + new Date().toISOString());
-    lines.push('');
-    lines.push('---');
-    lines.push('');
-    lines.push('## Headline');
-    lines.push('');
-    lines.push('- **Total events:** ' + totalEvents);
-    lines.push('- **Contribution weight:** ' + totalContribution);
-    lines.push('- **Bloom shape:** ' + shapeName + ' (peak in ' + RINGS[peakIdx].v + ' · ' + RINGS[peakIdx].anat + ')');
-    lines.push('- **BSV anchors this period:** ' + anchoredCount);
-    if (LEDGER.ob_balance) {
-      lines.push('- **$KONO balance:** ' + LEDGER.ob_balance.balance);
-    }
-    lines.push('');
-    lines.push('## Bloom signature');
-    lines.push('');
-    lines.push('```');
-    lines.push('Ring   Anatomy   Earning verb   Count   %');
-    lines.push('────   ───────   ────────────   ─────   ────');
-    RINGS.forEach(function(r, i){
-      var n = qBloom[i];
-      var pct = totalContribution > 0 ? (n / totalContribution * 100).toFixed(1) + '%' : '—';
-      lines.push(r.v + '    ' + r.anat.padEnd(9) + r.verb.padEnd(14) + ' ' + String(n).padStart(5) + '   ' + pct);
-    });
-    lines.push('```');
-    lines.push('');
-    lines.push('## Bloom prime-product (identity)');
-    lines.push('');
-    lines.push('`' + primesProduct + '`');
-    lines.push('');
-    lines.push('_This integer is your tool\'s unique cognitive contribution signature for the period._');
-    lines.push('');
-    lines.push('## Top 10 actions');
-    lines.push('');
-    topList.forEach(function(t){ lines.push('- `' + t[0] + '` × ' + t[1]); });
-    lines.push('');
-    lines.push('## Verification');
-    lines.push('');
-    lines.push('- KCC key: `' + KEY + '`');
-    lines.push('- Ledger head: `' + (LEDGER.head || '∅') + '`');
-    lines.push('- Anchors written to BSV: ' + anchoredCount);
-    lines.push('');
-    lines.push('---');
-    lines.push('');
-    lines.push('_Generated by KCC shim v3 · Ω(KCC) v18 · part of the Fall* estate._');
-    return lines.join('\n');
-  }
-
-  // ── public API ────────────────────────────────
-  window.kcc = {
-    emit: emit, bloom: bloom, shape: shape, exportProof: exportProof, rings: RINGS,
-    ledger: function(){ return { events: LEDGER.events.slice(), head: LEDGER.head, anchors: (LEDGER.anchors||[]).slice() }; },
-    clear: function(){ if (confirm('Clear KCC ledger for ' + NODE.id + '? Cannot undo.')) { LEDGER = { events:[], head:null, last_export:null, ob_balance:null, ob_last_sync:null, anchors:[] }; persist(); updateBadge(); } },
-    showLedger: showLedger,
-    kccKey: function(){ return KEY; },
-    onlybrains: function(){ return LEDGER.ob_balance; },
-    exportBloomReport: exportBloomReport,
-    // OnlyBrains REST client
-    syncOnlyBrains: syncOnlyBrains,
-    reason: reason, anchor: anchor, oracle: oracle, mintNft: mintNft,
-    queryTags: queryTags, quote: quote, swap: swap,
-    rates: rates, tiers: tiers, chain: chain, fnList: fnList, wallet: wallet
-  };
-
-  // ── boot ──────────────────────────────────────
-  (async function(){
-    if (document.readyState === 'loading') {
-      await new Promise(function(r){ document.addEventListener('DOMContentLoaded', r, { once:true }); });
-    }
-    injectBadge();
-    var todayKey = 'kcc_open_' + new Date().toISOString().slice(0,10);
-    if (!sessionStorage.getItem(todayKey)) { sessionStorage.setItem(todayKey, '1'); emit('app:open', 0, 1); }
-    var lastSync = LEDGER.ob_last_sync || 0;
-    if (Date.now() - lastSync > 3600 * 1000) syncOnlyBrains();
-    try { console.log('%c◊·κ KCC v3', 'color:#c2a060;font-weight:bold',
-      NODE.name + ' · ' + LEDGER.events.length + ' events · shape: ' + shape().shape + ' · key: ' + KEY); } catch(_){}
-  })();
-})();
-</script>
-<!-- /◊·κ KCC LEDGER -->
-
-<!-- ◊·κ LLM CASCADE — T0→T4 sovereign fallback (drop-in, no deps except optional WebLLM ESM)
-  T0  · deterministic / template fallback (always works, never fails)
-  T1  · user's own API key (Anthropic / OpenAI / Google · stored in localStorage)
-  T2  · same-origin mesh peer (BroadcastChannel('fallmesh') · ask other tabs)
-  T3  · OnlyBrains /api/reason (paid via $KONO · uses window.kcc.reason)
-  T4  · WebLLM in-browser (Llama-3.2-3B by default · ~1.7GB one-time download · runs offline)
-
-  Public API:
-    window.llm.ask(prompt, opts)         → { provider, tier, text, ms } | { error }
-    window.llm.providers()               → { anthropic:bool, openai:bool, google:bool, mesh:bool, onlybrains:bool, webllm:'ready'|'downloading'|'not-loaded' }
-    window.llm.setKey(provider, key)     → stores key
-    window.llm.preloadWebLLM(modelId?)   → kicks off WebLLM download
-    window.llm.tier()                    → 'T1' / 'T2' / 'T3' / 'T4' / 'T0' — current default tier
-    window.llm.config                    → { preferred: ['anthropic','onlybrains','webllm','t0'] }
--->
-<script>
-(function llmCascade(){
-  if (window.llm) return;
-
-  var STORE_KEY = 'llm_cascade_v1';
-  var STATE = {
-    keys: {},                  // { anthropic: 'sk-ant-...', openai: '...', google: '...' }
-    webllm: { status: 'not-loaded', model: null, progress: 0, message: '' },
-    // T1 FallCore (local proxy) → T1 user keys → T3 OnlyBrains → T4 WebLLM → T2 mesh → T0 fallback
-    preferred: ['fallcore', 'anthropic', 'openai', 'google', 'onlybrains', 'webllm', 'mesh', 't0'],
-    fallcore_endpoint: '',   // e.g. 'http://localhost:11434' or 'https://ai.acme.internal'
-    log: []                    // last 50 calls: { t, provider, tier, ms, ok, prompt_chars }
-  };
-  try {
-    var raw = localStorage.getItem(STORE_KEY);
-    if (raw) STATE = Object.assign(STATE, JSON.parse(raw));
-  } catch(_){}
-  function persist(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); } catch(_){} }
-
-  function trace(provider, tier, ms, ok, prompt) {
-    STATE.log.unshift({ t: Date.now(), provider: provider, tier: tier, ms: ms, ok: !!ok, prompt_chars: (prompt || '').length });
-    if (STATE.log.length > 50) STATE.log.length = 50;
-    persist();
-    if (window.kcc) {
-      // R5 verify when AI returns useful output; R0 compute on every call
-      window.kcc.emit('llm:' + provider + (ok ? '' : ':fail'), ok ? 5 : 0, ok ? 1 : 0.2, { tier: tier, ms: ms });
-    }
-  }
-
-  function withTimeout(promise, ms, label) {
-    return Promise.race([
-      promise,
-      new Promise(function(_, rej){ setTimeout(function(){ rej(new Error((label||'op') + ' timeout')); }, ms || 30000); })
-    ]);
-  }
-
-  // ── T1 providers — direct from browser (CORS-allowed endpoints) ──
-  var T1 = {
-    // FallCore: company's on-prem brain · same API shape as Anthropic
-    // If configured, this tries FIRST · transparent fallthrough if low confidence
-    fallcore: {
-      tier: 'T1',
-      label: 'FallCore (on-prem)',
-      available: function(){ return !!STATE.fallcore_endpoint; },
-      hasKey: function(){ return !!STATE.fallcore_endpoint; },
-      ask: async function(prompt, opts){
-        if (!STATE.fallcore_endpoint) throw new Error('no fallcore endpoint');
-        var url = STATE.fallcore_endpoint.replace(/\/$/, '') + '/v1/messages';
-        var r = await withTimeout(fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': STATE.keys.anthropic || 'fallcore-cascade',
-            'anthropic-version': '2023-06-01',
-            'x-fallcore-tool': (window.NODE ? window.NODE.id : 'anon')
-          },
-          body: JSON.stringify({
-            model: opts.model || 'claude-sonnet-4-20250514',  // FallCore picks local first regardless
-            max_tokens: opts.max_tokens || 2048,
-            system: opts.system || 'You are a helpful assistant for ' + (window.NODE ? window.NODE.name : 'this app') + '. Reply concisely.',
-            messages: [{ role: 'user', content: prompt }],
-            fallcore_options: opts.fallcore_options || {}
-          })
-        }), 60000, 'fallcore');
-        if (!r.ok) throw new Error('fallcore ' + r.status);
-        var j = await r.json();
-        return j.content[0].text;
-      }
-    },
-    anthropic: {
-      tier: 'T1',
-      label: 'Anthropic',
-      hasKey: function(){ return !!STATE.keys.anthropic; },
-      ask: async function(prompt, opts){
-        if (!STATE.keys.anthropic) throw new Error('no anthropic key');
-        var r = await withTimeout(fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': STATE.keys.anthropic,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-          },
-          body: JSON.stringify({
-            model: opts.model || 'claude-sonnet-4-20250514',
-            max_tokens: opts.max_tokens || 2048,
-            system: opts.system || 'You are a helpful assistant for ' + (window.NODE ? window.NODE.name : 'this app') + '. Reply concisely.',
-            messages: [{ role: 'user', content: prompt }]
-          })
-        }), 45000, 'anthropic');
-        if (!r.ok) throw new Error('anthropic ' + r.status);
-        var j = await r.json();
-        return j.content[0].text;
-      }
-    },
-    openai: {
-      tier: 'T1',
-      label: 'OpenAI',
-      hasKey: function(){ return !!STATE.keys.openai; },
-      ask: async function(prompt, opts){
-        if (!STATE.keys.openai) throw new Error('no openai key');
-        var r = await withTimeout(fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + STATE.keys.openai },
-          body: JSON.stringify({
-            model: opts.model || 'gpt-4o-mini',
-            max_tokens: opts.max_tokens || 2048,
-            messages: [
-              { role: 'system', content: opts.system || 'You are a helpful assistant. Reply concisely.' },
-              { role: 'user', content: prompt }
-            ]
-          })
-        }), 45000, 'openai');
-        if (!r.ok) throw new Error('openai ' + r.status);
-        var j = await r.json();
-        return j.choices[0].message.content;
-      }
-    },
-    google: {
-      tier: 'T1',
-      label: 'Google',
-      hasKey: function(){ return !!STATE.keys.google; },
-      ask: async function(prompt, opts){
-        if (!STATE.keys.google) throw new Error('no google key');
-        var model = opts.model || 'gemini-2.0-flash';
-        var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(STATE.keys.google);
-        var r = await withTimeout(fetch(url, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ role:'user', parts: [{ text: (opts.system ? opts.system + '\n\n' : '') + prompt }] }],
-            generationConfig: { maxOutputTokens: opts.max_tokens || 2048 }
-          })
-        }), 45000, 'google');
-        if (!r.ok) throw new Error('google ' + r.status);
-        var j = await r.json();
-        return j.candidates[0].content.parts[0].text;
-      }
-    }
-  };
-
-  // ── T2 mesh peer (ask another tab) ──
-  var T2 = {
-    mesh: {
-      tier: 'T2',
-      label: 'Mesh peer',
-      available: function(){ try { return !!window.BroadcastChannel; } catch(_){ return false; } },
-      ask: function(prompt, opts){
-        return new Promise(function(resolve, reject){
-          if (!window.BroadcastChannel) return reject(new Error('no BroadcastChannel'));
-          var ch;
-          try { ch = new BroadcastChannel('fallmesh'); }
-          catch(e){ return reject(new Error('mesh open failed')); }
-          var reqId = 'llmreq_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-          var handler = function(e){
-            var m = e.data;
-            if (m && m.type === 'llm:response' && m.req === reqId) {
-              ch.removeEventListener('message', handler);
-              ch.close();
-              if (m.text) resolve(m.text);
-              else reject(new Error(m.error || 'mesh empty'));
-            }
-          };
-          ch.addEventListener('message', handler);
-          try {
-            ch.postMessage({
-              type: 'llm:request', req: reqId,
-              from: window.NODE ? window.NODE.id : 'anon',
-              prompt: prompt, opts: opts || {}
-            });
-          } catch(e){ ch.close(); return reject(e); }
-          setTimeout(function(){
-            try { ch.removeEventListener('message', handler); ch.close(); } catch(_){}
-            reject(new Error('mesh timeout'));
-          }, opts.mesh_timeout || 2000);
-        });
-      }
-    }
-  };
-
-  // ── T3 OnlyBrains (via window.kcc) ──
-  var T3 = {
-    onlybrains: {
-      tier: 'T3',
-      label: 'OnlyBrains',
-      available: function(){ return !!(window.kcc && window.kcc.reason); },
-      ask: async function(prompt, opts){
-        if (!window.kcc || !window.kcc.reason) throw new Error('kcc not loaded');
-        var r = await withTimeout(window.kcc.reason(prompt, opts.strategy || 'CoT'), 60000, 'onlybrains');
-        if (r && r.error) throw new Error('onlybrains: ' + r.error);
-        // Shape: response varies by OnlyBrains API · normalise
-        if (typeof r === 'string') return r;
-        return r.text || r.answer || r.result || r.output || JSON.stringify(r);
-      }
-    }
-  };
-
-  // ── T4 WebLLM (in-browser, requires WebGPU) ──
-  var WEBLLM_DEFAULT_MODEL = 'Llama-3.2-3B-Instruct-q4f16_1-MLC';
-  var webllmEngine = null;
-  var webllmLoadPromise = null;
-  function hasWebGPU(){ return typeof navigator !== 'undefined' && !!navigator.gpu; }
-  async function loadWebLLM(modelId) {
-    if (webllmEngine) return webllmEngine;
-    if (webllmLoadPromise) return webllmLoadPromise;
-    if (!hasWebGPU()) throw new Error('WebGPU unavailable in this browser');
-    STATE.webllm.status = 'downloading';
-    STATE.webllm.model = modelId || WEBLLM_DEFAULT_MODEL;
-    STATE.webllm.progress = 0;
-    STATE.webllm.message = 'starting…';
-    persist();
-    updateUI();
-    webllmLoadPromise = (async function(){
-      var mod = await import('https://esm.run/@mlc-ai/web-llm');
-      var fn = mod.CreateMLCEngine || mod.createMLCEngine;
-      if (!fn) throw new Error('WebLLM API not found in module');
-      webllmEngine = await fn(STATE.webllm.model, {
-        initProgressCallback: function(p){
-          STATE.webllm.progress = p.progress || 0;
-          STATE.webllm.message = p.text || '';
-          persist();
-          updateUI();
-        }
-      });
-      STATE.webllm.status = 'ready';
-      STATE.webllm.message = 'ready';
-      persist();
-      updateUI();
-      return webllmEngine;
-    })().catch(function(e){
-      STATE.webllm.status = 'error';
-      STATE.webllm.message = e.message || String(e);
-      persist();
-      updateUI();
-      webllmLoadPromise = null;
-      throw e;
-    });
-    return webllmLoadPromise;
-  }
-  var T4 = {
-    webllm: {
-      tier: 'T4',
-      label: 'WebLLM (offline)',
-      available: function(){ return hasWebGPU(); },
-      ask: async function(prompt, opts){
-        var eng = await loadWebLLM(opts.model);
-        var r = await eng.chat.completions.create({
-          messages: [
-            { role: 'system', content: opts.system || 'You are a helpful assistant. Reply concisely.' },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: opts.max_tokens || 1024,
-          temperature: opts.temperature == null ? 0.7 : opts.temperature
-        });
-        return r.choices[0].message.content;
-      }
-    }
-  };
-
-  // ── T0 deterministic fallback (last resort, never throws) ──
-  var T0 = {
-    t0: {
-      tier: 'T0',
-      label: 'Offline fallback',
-      available: function(){ return true; },
-      ask: async function(prompt, opts){
-        if (opts.fallback) return typeof opts.fallback === 'function' ? opts.fallback(prompt) : opts.fallback;
-        return '[T0] No AI provider available. Add an API key (Settings → AI Cascade), enable WebLLM, or check internet connection. Prompt was: ' + String(prompt || '').slice(0, 200);
-      }
-    }
-  };
-
-  var ALL = Object.assign({}, T1, T2, T3, T4, T0);
-
-  // Listen for mesh peer requests — if other tabs ask us, answer using our T1 provider only
-  // (don't recurse into mesh asking mesh asking mesh)
-  try {
-    var peerCh = new BroadcastChannel('fallmesh');
-    peerCh.addEventListener('message', async function(e){
-      var m = e.data;
-      if (!m || m.type !== 'llm:request' || m.from === (window.NODE && window.NODE.id)) return;
-      // Try T1 only — don't recurse
-      for (var i = 0; i < STATE.preferred.length; i++) {
-        var p = STATE.preferred[i];
-        if (p === 'mesh' || p === 't0' || !ALL[p]) continue;
-        if (ALL[p].tier !== 'T1') continue;
-        if (ALL[p].hasKey && !ALL[p].hasKey()) continue;
-        try {
-          var text = await ALL[p].ask(m.prompt, m.opts || {});
-          peerCh.postMessage({ type: 'llm:response', req: m.req, text: text, served_by: window.NODE && window.NODE.id });
+          const parsed = JSON.parse(jsonMatch[0]);
+          out.innerHTML = '<pre>' + escHTML(JSON.stringify(parsed, null, 2)) + '</pre>';
           return;
-        } catch(_){}
+        } catch (e) {}
       }
-      // Couldn't help — silently ignore
-    });
-  } catch(_){}
-
-  // ── Main ask() — walks the cascade ──
-  async function ask(prompt, opts) {
-    opts = opts || {};
-    var order = opts.order || STATE.preferred;
-    var skipped = [];
-    for (var i = 0; i < order.length; i++) {
-      var name = order[i];
-      var p = ALL[name];
-      if (!p) continue;
-      if (p.available && !p.available()) { skipped.push({ name: name, reason: 'unavailable' }); continue; }
-      if (p.hasKey && !p.hasKey()) { skipped.push({ name: name, reason: 'no key' }); continue; }
-      var t0 = Date.now();
-      try {
-        var text = await p.ask(prompt, opts);
-        var ms = Date.now() - t0;
-        trace(name, p.tier, ms, true, prompt);
-        return { provider: name, tier: p.tier, label: p.label, text: text, ms: ms, skipped: skipped };
-      } catch(e) {
-        var ms2 = Date.now() - t0;
-        trace(name, p.tier, ms2, false, prompt);
-        skipped.push({ name: name, reason: e.message || String(e), ms: ms2 });
-      }
-    }
-    return { error: 'all providers failed', skipped: skipped };
-  }
-
-  function providers() {
-    return {
-      fallcore: !!STATE.fallcore_endpoint,
-      fallcore_endpoint: STATE.fallcore_endpoint,
-      anthropic: !!STATE.keys.anthropic,
-      openai: !!STATE.keys.openai,
-      google: !!STATE.keys.google,
-      mesh: !!window.BroadcastChannel,
-      onlybrains: !!(window.kcc && window.kcc.reason),
-      webllm_supported: hasWebGPU(),
-      webllm_status: STATE.webllm.status,
-      webllm_progress: STATE.webllm.progress,
-      webllm_model: STATE.webllm.model
-    };
-  }
-
-  function setKey(provider, key) {
-    STATE.keys[provider] = key;
-    persist();
-    updateUI();
-  }
-  function setFallcoreEndpoint(url) {
-    STATE.fallcore_endpoint = String(url || '').trim();
-    persist();
-    updateUI();
-  }
-
-  function currentTier() {
-    // Highest-priority tier that will ACTUALLY answer (mesh excluded since it's peer-dependent)
-    var prov = providers();
-    if (prov.fallcore) return 'T1·FallCore';
-    if (prov.anthropic || prov.openai || prov.google) return 'T1';
-    if (prov.onlybrains) return 'T3';
-    if (prov.webllm_status === 'ready') return 'T4';
-    return 'T0';
-  }
-
-  // ── Floating cascade-status badge ──
-  var badge = null;
-  function injectBadge(){
-    if (document.getElementById('llm-badge')) return;
-    var el = document.createElement('div');
-    el.id = 'llm-badge';
-    el.style.cssText = 'position:fixed;bottom:12px;left:340px;background:rgba(0,0,0,.65);color:#dbe1ea;padding:5px 10px;border-radius:6px;font-family:monospace;font-size:11px;cursor:pointer;z-index:9999;letter-spacing:.06em;border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px';
-    el.title = 'LLM Cascade · click for status';
-    el.onclick = function(){ showCascadeUI(); };
-    document.body.appendChild(el);
-    badge = el;
-    updateUI();
-  }
-  function updateUI(){
-    if (!badge) return;
-    var tier = currentTier();
-    var colour = tier === 'T1' ? '#22c55e' : tier === 'T2' ? '#8b5cf6' : tier === 'T3' ? '#d4af37' : tier === 'T4' ? '#f59e0b' : '#8a8a8a';
-    var label = 'AI · ' + tier;
-    if (STATE.webllm.status === 'downloading') {
-      label = 'WebLLM ' + Math.round((STATE.webllm.progress || 0) * 100) + '%';
-      colour = '#f59e0b';
-    }
-    badge.innerHTML = '<span style="color:' + colour + ';font-weight:700">●</span><span>' + label + '</span>';
-  }
-
-  // ── Settings modal ──
-  function showCascadeUI(){
-    var prov = providers();
-    var tier = currentTier();
-    var fallcoreHtml = '<div style="background:#0c0e12;border:1px solid #2a2f3a;border-radius:6px;padding:10px;margin-bottom:10px;font-size:12px">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><strong style="color:#22c55e">⚡ FallCore (on-prem brain)</strong><span style="color:#8a8a8a;font-size:11px">' + (STATE.fallcore_endpoint ? STATE.fallcore_endpoint : 'not set') + '</span></div>' +
-      '<div style="font-size:11px;color:#a8b0bc;margin-bottom:8px">Point at your company’s on-prem brain. Cascades local-first, falls through to frontier only on low confidence. Same API as Anthropic. Self-improves over time from your reviewer corrections.</div>' +
-      '<div style="display:flex;gap:6px;align-items:center">' +
-      '<input type="text" id="llm-fallcore-url" placeholder="https://ai.acme.internal or http://localhost:11434" value="' + (STATE.fallcore_endpoint || '') + '" style="flex:1;background:#0c0e12;color:#dbe1ea;border:1px solid #2a2f3a;border-radius:5px;padding:5px 8px;font-family:monospace;font-size:11px">' +
-      '<button id="llm-fallcore-save" style="background:#22c55e;color:#000;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600">save</button>' +
-      (STATE.fallcore_endpoint ? '<button id="llm-fallcore-clear" style="background:transparent;color:#ef4444;border:1px solid #ef4444;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:11px">clear</button>' : '') +
-      '</div></div>';
-    var keysHtml = ['anthropic','openai','google'].map(function(p){
-      var has = !!STATE.keys[p];
-      var label = p[0].toUpperCase() + p.slice(1);
-      return '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px"><label style="width:90px;font-size:12px;color:#a8b0bc">' + label + '</label><input type="password" id="llm-key-' + p + '" placeholder="' + (has ? '••• key saved' : 'paste API key') + '" style="flex:1;background:#0c0e12;color:#dbe1ea;border:1px solid #2a2f3a;border-radius:5px;padding:5px 8px;font-family:monospace;font-size:11px"><button data-save="' + p + '" style="background:#5b8def;color:#fff;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px">save</button>' + (has ? '<button data-clear="' + p + '" style="background:transparent;color:#ef4444;border:1px solid #ef4444;padding:4px 8px;border-radius:5px;cursor:pointer;font-size:11px">clear</button>' : '') + '</div>';
-    }).join('');
-    var webllmStatus = STATE.webllm.status;
-    var webllmHtml = '<div style="background:#0c0e12;border:1px solid #2a2f3a;border-radius:6px;padding:10px;margin:10px 0;font-size:12px">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><strong style="color:#f59e0b">⚡ WebLLM (in-browser, offline-capable)</strong><span style="color:#8a8a8a;font-size:11px">' + (STATE.webllm.model || WEBLLM_DEFAULT_MODEL) + '</span></div>' +
-      '<div style="font-size:11px;color:#a8b0bc;margin-bottom:8px">Downloads a 1.7GB model once. After that all AI runs in your browser using WebGPU — no internet needed. Status: <strong style="color:' + (webllmStatus === 'ready' ? '#22c55e' : webllmStatus === 'downloading' ? '#f59e0b' : '#8a8a8a') + '">' + webllmStatus + '</strong>' + (STATE.webllm.message ? ' · ' + STATE.webllm.message : '') + '</div>' +
-      (webllmStatus === 'downloading' ? '<div style="height:6px;background:#1f2937;border-radius:3px;overflow:hidden;margin-bottom:6px"><div style="height:100%;background:#f59e0b;width:' + Math.round((STATE.webllm.progress || 0) * 100) + '%"></div></div>' : '') +
-      '<div style="display:flex;gap:6px"><button id="llm-webllm-download" ' + (webllmStatus === 'downloading' || webllmStatus === 'ready' ? 'disabled' : '') + ' style="background:#f59e0b;color:#000;border:none;padding:6px 12px;border-radius:5px;cursor:' + (webllmStatus === 'downloading' || webllmStatus === 'ready' ? 'not-allowed;opacity:.5' : 'pointer') + ';font-size:11px;font-weight:600">' + (webllmStatus === 'ready' ? '✓ loaded' : webllmStatus === 'downloading' ? 'downloading…' : 'download model (1.7GB)') + '</button>' +
-      (hasWebGPU() ? '<span style="font-size:10px;color:#22c55e;align-self:center">✓ WebGPU supported</span>' : '<span style="font-size:10px;color:#ef4444;align-self:center">✗ WebGPU not available in this browser</span>') +
-      '</div></div>';
-    var logHtml = STATE.log.slice(0, 6).map(function(l){
-      var d = new Date(l.t).toLocaleString();
-      var ok = l.ok ? '✓' : '✗';
-      var colour = l.ok ? '#22c55e' : '#ef4444';
-      return '<div style="font-size:10px;color:#a8b0bc;padding:2px 0"><span style="color:#8a8a8a">' + d + '</span> · <span style="color:' + colour + '">' + ok + '</span> ' + l.provider + ' (' + l.tier + ') · ' + l.ms + 'ms · ' + l.prompt_chars + ' chars in</div>';
-    }).join('') || '<div style="color:#8a8a8a;font-size:11px">no calls yet</div>';
-
-    var modal = document.createElement('div');
-    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:system-ui,sans-serif';
-    modal.innerHTML='<div style="background:#161821;border:1px solid #2a2f3a;border-radius:12px;padding:22px;max-width:580px;width:100%;color:#dbe1ea;max-height:90vh;overflow:auto">' +
-      '<h3 style="margin:0 0 4px;color:#e6e8ee">◊·κ LLM Cascade</h3>' +
-      '<p style="margin:0 0 12px;font-size:12px;color:#8a8a8a">Current tier: <strong style="color:' + (tier==='T1'?'#22c55e':tier==='T2'?'#8b5cf6':tier==='T3'?'#d4af37':tier==='T4'?'#f59e0b':'#8a8a8a') + '">' + tier + '</strong> · fallback order: ' + STATE.preferred.join(' → ') + '</p>' +
-      '<h4 style="font-size:11px;color:#8a8a8a;letter-spacing:.08em;text-transform:uppercase;margin:8px 0 6px">T1 · FallCore (your on-prem brain)</h4>' +
-      fallcoreHtml +
-      '<h4 style="font-size:11px;color:#8a8a8a;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 6px">T1 · direct API keys (browser-only, never leaves device)</h4>' +
-      keysHtml +
-      '<h4 style="font-size:11px;color:#8a8a8a;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px">T4 · WebLLM offline</h4>' +
-      webllmHtml +
-      '<h4 style="font-size:11px;color:#8a8a8a;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px">recent calls</h4>' +
-      logHtml +
-      '<div style="display:flex;gap:8px;margin-top:14px"><button id="llm-test" style="background:#5b8def;color:#fff;border:none;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px">test cascade</button><button id="llm-close" style="background:transparent;color:#8a8a8a;border:1px solid #2a2f3a;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px">close</button></div>' +
-      '<div id="llm-test-result" style="margin-top:10px;font-size:11px;color:#a8b0bc;font-family:monospace;display:none;background:#06080c;border:1px solid #1f2937;border-radius:4px;padding:8px;max-height:200px;overflow:auto"></div>' +
-      '</div>';
-    document.body.appendChild(modal);
-    modal.querySelector('#llm-close').onclick = function(){ modal.remove(); };
-    modal.onclick = function(e){ if (e.target === modal) modal.remove(); };
-    // FallCore endpoint save/clear
-    var fcSave = modal.querySelector('#llm-fallcore-save');
-    if (fcSave) fcSave.onclick = function(){
-      var url = modal.querySelector('#llm-fallcore-url').value.trim();
-      setFallcoreEndpoint(url);
-      modal.remove(); showCascadeUI();
-    };
-    var fcClear = modal.querySelector('#llm-fallcore-clear');
-    if (fcClear) fcClear.onclick = function(){
-      setFallcoreEndpoint('');
-      modal.remove(); showCascadeUI();
-    };
-    modal.querySelectorAll('[data-save]').forEach(function(b){
-      b.onclick = function(){
-        var p = b.getAttribute('data-save');
-        var inp = modal.querySelector('#llm-key-' + p);
-        if (inp.value) { setKey(p, inp.value); modal.remove(); showCascadeUI(); }
-      };
-    });
-    modal.querySelectorAll('[data-clear]').forEach(function(b){
-      b.onclick = function(){ var p = b.getAttribute('data-clear'); delete STATE.keys[p]; persist(); updateUI(); modal.remove(); showCascadeUI(); };
-    });
-    var dl = modal.querySelector('#llm-webllm-download');
-    if (dl) dl.onclick = function(){ loadWebLLM().then(function(){ modal.remove(); showCascadeUI(); }).catch(function(e){ alert('WebLLM load failed: ' + e.message); }); };
-    var test = modal.querySelector('#llm-test');
-    test.onclick = async function(){
-      var res = modal.querySelector('#llm-test-result');
-      res.style.display = 'block';
-      res.textContent = 'testing… asking "Say OK in one word"';
-      var r = await ask('Say OK in one word.', { max_tokens: 32 });
-      res.textContent = r.error ? '✗ ' + r.error + '\nSkipped: ' + JSON.stringify(r.skipped || [], null, 2) : '✓ ' + r.provider + ' (' + r.tier + ') · ' + r.ms + 'ms\n\n' + r.text;
-    };
-  }
-
-  // Boot
-  (function boot(){
-    function ready(){
-      injectBadge();
-      try { console.log('%c◊·κ LLM cascade', 'color:#5b8def;font-weight:bold', 'current tier:', currentTier(), '· providers:', providers()); } catch(_){}
-    }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready, { once:true });
-    else ready();
-  })();
-
-  window.llm = {
-    ask: ask,
-    providers: providers,
-    setKey: setKey,
-    setFallcoreEndpoint: setFallcoreEndpoint,
-    preloadWebLLM: loadWebLLM,
-    tier: currentTier,
-    config: { preferred: STATE.preferred },
-    showSettings: showCascadeUI,
-    _state: STATE
-  };
-})();
-</script>
-<!-- /◊·κ LLM CASCADE -->
-<!-- ◊·κ FALL-API SHIM — inter-tool API surface · cli(cmd) layer
-  Turns every Fall* HTML into an API endpoint other tools (in other tabs)
-  can call without a server. Same-origin BroadcastChannel transport.
-
-  Per Thomas's 5-turtle stack:
-    sys(params) → cmd(sys) → cli(cmd) → api(cli) → mcp(api)
-  This is the cli(cmd) / api(cli) layer for sovereign HTMLs.
-
-  Public API:
-    window.fall_api.register(resource, handler)   — expose a resource
-    window.fall_api.list()                        — what this tool exposes
-    window.fall.call(tool, resource, params)      — call another tool's API
-    window.fall.callMany(...)                     — fan out across mesh
-    window.fall.discover()                        — list all visible Fall* tools + their APIs
-
-  Depends on: window.NODE (mesh shim) for identity + BroadcastChannel.
--->
-<script>
-(function fallApiShim(){
-  if (!window.NODE) return;
-  if (window.fall_api) return; // already loaded
-
-  var REGISTRY = {};   // resource → handler
-  var PEERS = {};      // tool_id → { last_seen, resources, prime, name }
-  var PEER_TTL = 30000;
-
-  // Open dedicated channel for API traffic (separate from fallmesh events)
-  var channel = null;
-  try { channel = new BroadcastChannel('fall-api'); }
-  catch (_) { return; } // browser too old
-
-  function emit(msg) {
-    try { channel.postMessage(Object.assign({ from: NODE.id, prime: NODE.prime, t: Date.now() }, msg)); } catch (_){}
-  }
-
-  // ── Server side (this tool exposes resources) ──
-  window.fall_api = {
-    register: function(resource, handler, meta) {
-      if (typeof resource !== 'string' || typeof handler !== 'function') return false;
-      REGISTRY[resource] = { handler: handler, meta: meta || {} };
-      // Broadcast discovery
-      emit({ type: 'fall-api:register', resource: resource, name: NODE.name, meta: meta || {} });
-      // Track in KCC (R6 govern — exposing a public surface)
-      if (window.kcc) window.kcc.emit('api:register:' + resource, 6, 0.5);
-      return true;
-    },
-    unregister: function(resource) {
-      delete REGISTRY[resource];
-      emit({ type: 'fall-api:unregister', resource: resource });
-    },
-    list: function() {
-      return Object.keys(REGISTRY).map(function(r){
-        return { resource: r, meta: REGISTRY[r].meta };
-      });
-    }
-  };
-
-  // ── Handle incoming requests ──
-  channel.onmessage = function(e) {
-    var m = e.data;
-    if (!m || m.from === NODE.id) return;
-
-    // Track peer
-    if (m.type && m.from) {
-      PEERS[m.from] = PEERS[m.from] || { resources: {} };
-      PEERS[m.from].last_seen = Date.now();
-      PEERS[m.from].prime = m.prime;
-      PEERS[m.from].name = m.name || PEERS[m.from].name;
-    }
-
-    // Discovery broadcasts
-    if (m.type === 'fall-api:register' && m.from && m.resource) {
-      PEERS[m.from].resources[m.resource] = m.meta || {};
-      return;
-    }
-    if (m.type === 'fall-api:unregister' && m.from && m.resource) {
-      if (PEERS[m.from]) delete PEERS[m.from].resources[m.resource];
-      return;
-    }
-    if (m.type === 'fall-api:hello') {
-      // Reply with our capabilities
-      emit({
-        type: 'fall-api:announce',
-        name: NODE.name,
-        resources: Object.keys(REGISTRY).reduce(function(acc, k){ acc[k] = REGISTRY[k].meta || {}; return acc; }, {})
-      });
-      return;
-    }
-    if (m.type === 'fall-api:announce' && m.from) {
-      PEERS[m.from].resources = m.resources || {};
-      return;
-    }
-
-    // Request targeted at us
-    if (m.type === 'fall-api:request' && m.target === NODE.id) {
-      var entry = REGISTRY[m.resource];
-      if (!entry) {
-        emit({ type: 'fall-api:response', req: m.req, target: m.from, error: 'resource not found: ' + m.resource });
-        return;
-      }
-      try {
-        Promise.resolve(entry.handler(m.params || {}, { caller: m.from, callerPrime: m.callerPrime }))
-          .then(function(result){
-            emit({ type: 'fall-api:response', req: m.req, target: m.from, ok: true, result: result, resource: m.resource });
-            if (window.kcc) window.kcc.emit('api:served:' + m.resource, 4, 1, { caller: m.from });
-          })
-          .catch(function(err){
-            emit({ type: 'fall-api:response', req: m.req, target: m.from, error: err.message || String(err) });
-          });
-      } catch (e) {
-        emit({ type: 'fall-api:response', req: m.req, target: m.from, error: e.message });
-      }
-      return;
-    }
-  };
-
-  // ── Client side (this tool calls another tool's API) ──
-  window.fall = {
-    call: function(tool, resource, params, opts) {
-      opts = opts || {};
-      return new Promise(function(resolve, reject){
-        if (!channel) return reject(new Error('no BroadcastChannel'));
-        var req = 'fr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-        var done = false;
-        var handler = function(e) {
-          var m = e.data;
-          if (m && m.type === 'fall-api:response' && m.req === req) {
-            done = true;
-            channel.removeEventListener('message', handler);
-            if (m.error) return reject(new Error(m.error));
-            resolve(m.result);
-          }
-        };
-        channel.addEventListener('message', handler);
-        emit({ type: 'fall-api:request', req: req, target: tool, resource: resource, params: params, callerPrime: NODE.prime });
-        if (window.kcc) window.kcc.emit('api:call:' + tool + '/' + resource, 1, 0.5);
-        setTimeout(function(){
-          if (done) return;
-          channel.removeEventListener('message', handler);
-          reject(new Error('fall.call timeout · ' + tool + '/' + resource));
-        }, opts.timeout || 4000);
-      });
-    },
-
-    // Fan out: ask all peers that expose <resource>
-    callMany: function(resource, params, opts) {
-      var promises = Object.keys(PEERS)
-        .filter(function(p){ return PEERS[p].resources && PEERS[p].resources[resource]; })
-        .map(function(p){
-          return window.fall.call(p, resource, params, opts)
-            .then(function(r){ return { tool: p, ok: true, result: r }; })
-            .catch(function(e){ return { tool: p, ok: false, error: e.message }; });
-        });
-      return Promise.all(promises);
-    },
-
-    // List currently visible peers + their resources
-    discover: function() {
-      var now = Date.now();
-      var live = {};
-      Object.keys(PEERS).forEach(function(p){
-        if (now - PEERS[p].last_seen < PEER_TTL) live[p] = PEERS[p];
-      });
-      return live;
-    },
-
-    // Ask the network "what's out there"
-    refresh: function() {
-      emit({ type: 'fall-api:hello' });
-      return new Promise(function(r){ setTimeout(r, 600); }).then(function(){ return window.fall.discover(); });
-    }
-  };
-
-  // ── Boot · say hello to the network ──
-  (function boot(){
-    function ready(){
-      setTimeout(function(){
-        emit({ type: 'fall-api:hello', name: NODE.name });
-      }, 500);
-    }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready, { once:true });
-    else ready();
-  })();
-
-  try { console.log('%c◊·κ fall-api', 'color:#5b8def;font-weight:bold', NODE.name + ' · ready · register handlers via window.fall_api.register()'); } catch(_){}
-})();
-</script>
-<!-- /◊·κ FALL-API SHIM -->
-<!-- ◊·κ FALL-SW SHIM — Service Worker that turns sovereign HTML into an HTTP API
-  fetch('/api/&lt;tool&gt;/&lt;resource&gt;?param=...') from anywhere in this origin
-  → SW catches it → routes to whichever Fall* tab owns &lt;tool&gt; via the
-  fall-api channel → returns JSON Response.
-
-  Per Thomas's 5-turtle stack:
-    sys(params) → cmd(sys) → cli(cmd) → api(cli) → mcp(api)
-  This is the api(cli) layer · turns the cli into an HTTP-callable surface.
-
-  Browser-compatible. Requires:
-    · Service Workers (Chrome 40+, Safari 11.1+, Firefox 44+)
-    · BroadcastChannel API (already required by fall-api)
-
-  External callers (other tabs, native apps via localhost proxy, even other
-  domains via CORS) can now `fetch('https://your-host/api/gymos/members')`
-  and get a response — without any backend server.
-
-  Caveats:
-    · Same-origin only (this IS the sovereignty: no cross-origin to 3rd parties)
-    · Works only while AT LEAST ONE Fall* tab is open in the browser
-    · First request to /api/* requires SW to be installed (auto on first page load)
--->
-<script>
-(function fallSwShim(){
-  if (!window.NODE) return;
-  if (!('serviceWorker' in navigator)) {
-    try { console.log('%c◊·κ fall-sw', 'color:#8a8a8a', 'Service Workers not available · API surface is BroadcastChannel-only (no /api/* fetch interception)'); } catch(_){}
-    return;
-  }
-  if (window._fall_sw_installed) return;
-  window._fall_sw_installed = true;
-
-  // The SW code, as a string, served via Blob URL
-  var SW_CODE = `
-// ◊·κ FallCore Service Worker · v1
-// Intercepts /api/&lt;tool&gt;/&lt;resource&gt; · routes to clients
-const VERSION = '${Date.now()}';
-const TIMEOUT = 5000;
-
-self.addEventListener('install', function(e){
-  self.skipWaiting();
-});
-self.addEventListener('activate', function(e){
-  e.waitUntil(self.clients.claim());
-});
-
-self.addEventListener('fetch', function(event) {
-  var url = new URL(event.request.url);
-  // Only intercept same-origin /api/* paths
-  if (url.origin !== self.location.origin) return;
-  if (!url.pathname.startsWith('/api/')) return;
-
-  // Parse: /api/&lt;tool&gt;/&lt;resource&gt;
-  var parts = url.pathname.slice(5).split('/');
-  var tool = parts[0];
-  var resource = parts.slice(1).join('/');
-  if (!tool) return;
-
-  // Collect params from query + body
-  event.respondWith((async function(){
-    var params = {};
-    url.searchParams.forEach(function(v, k){ params[k] = v; });
-    if (event.request.method === 'POST') {
-      try {
-        var body = await event.request.json();
-        Object.assign(params, body || {});
-      } catch(_){}
-    }
-    // Ask any client tab to serve this
-    var clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    if (!clientList.length) {
-      return new Response(JSON.stringify({ error: 'no Fall* tab open · open the tool first' }), {
-        status: 503,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    var req = 'sw_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-    var channel = new MessageChannel();
-    var responsePromise = new Promise(function(resolve, reject){
-      var t = setTimeout(function(){ reject(new Error('sw timeout')); }, TIMEOUT);
-      channel.port1.onmessage = function(e){
-        clearTimeout(t);
-        if (e.data && e.data.error) reject(new Error(e.data.error));
-        else resolve(e.data && e.data.result);
-      };
-    });
-    // Broadcast to all clients; the one that owns the tool responds
-    clientList.forEach(function(c){
-      try {
-        c.postMessage({ type: 'sw:api-request', req: req, tool: tool, resource: resource, params: params }, [channel.port2]);
-      } catch(_){}
-    });
-    try {
-      var result = await responsePromise;
-      return new Response(JSON.stringify(result), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json', 'x-fallcore-sw': VERSION, 'Access-Control-Allow-Origin': '*' }
-      });
-    } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-  })());
-});
-`;
-
-  // Each page listens for SW messages and forwards via fall-api
-  navigator.serviceWorker.addEventListener('message', function(e) {
-    var m = e.data;
-    if (!m || m.type !== 'sw:api-request') return;
-    var port = e.ports && e.ports[0];
-    if (!port) return;
-    // Only respond if WE own this tool
-    if (m.tool !== NODE.id) {
-      // Forward through fall-api BroadcastChannel to whichever tab DOES own it
-      if (!window.fall || !window.fall.call) {
-        port.postMessage({ error: 'no fall-api shim loaded' });
-        return;
-      }
-      window.fall.call(m.tool, m.resource, m.params)
-        .then(function(r){ port.postMessage({ result: r }); })
-        .catch(function(e){ port.postMessage({ error: e.message }); });
-      return;
-    }
-    // We own it: invoke directly
-    if (!window.fall_api || !window.fall_api.list) {
-      port.postMessage({ error: 'no fall_api registry' });
-      return;
-    }
-    // Pretend we're another tab and use fall.call to ourselves (cleanest path through the registry)
-    if (window.fall && window.fall.call) {
-      window.fall.call(NODE.id, m.resource, m.params)
-        .then(function(r){ port.postMessage({ result: r }); })
-        .catch(function(e){ port.postMessage({ error: e.message }); });
+      out.innerHTML = '<pre>' + escHTML(result) + '</pre>';
     } else {
-      port.postMessage({ error: 'fall registry unavailable' });
+      out.innerHTML = '<pre>' + escHTML(result) + '</pre>';
     }
-  });
-
-  // Register the SW from inline Blob (scope: this page's directory; for tools at root, this is the whole origin)
-  function registerSw() {
-    try {
-      var blob = new Blob([SW_CODE], { type: 'application/javascript' });
-      var swUrl = URL.createObjectURL(blob);
-      // Note: SW scope is restricted to its URL path. Inline SWs scope only to the page that registered them.
-      // For full /api/* origin scope, the SW needs to be served from the origin root with proper Service-Worker-Allowed header.
-      // This v1 ships scope-limited; v2 will deploy a real /sw.js to each Pages root.
-      navigator.serviceWorker.register(swUrl, { scope: './' })
-        .then(function(reg){
-          try { console.log('%c◊·κ fall-sw', 'color:#5b8def;font-weight:bold', NODE.name + ' · Service Worker registered at scope ' + reg.scope); } catch(_){}
-          if (window.kcc) window.kcc.emit('sw:registered', 6, 1, { scope: reg.scope });
-        })
-        .catch(function(e){
-          try { console.log('%c◊·κ fall-sw', 'color:#c84a4a', 'SW registration failed: ' + e.message + ' (fine · fall-api still works via BroadcastChannel)'); } catch(_){}
-        });
-    } catch (e) {
-      try { console.log('%c◊·κ fall-sw', 'color:#c84a4a', 'SW unavailable: ' + e.message); } catch(_){}
-    }
+  } catch (e) {
+    out.classList.add('error');
+    out.innerHTML = '<pre>Error: ' + escHTML(e.message) + '</pre>';
   }
+}
+window.runDemo = runDemo;
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerSw, { once:true });
-  else registerSw();
-})();
+// Konomi + fall-signal
+window.KONOMI = { active: true, tier: 'sovereign' };
+try {
+  const sig = new BroadcastChannel('fall-signal');
+  sig.postMessage({ source: 'trilogy-sdk', type: 'hello', ts: Date.now() });
+} catch (e) {}
 </script>
-<!-- /◊·κ FALL-SW SHIM -->
-
-<!-- ◊·κ FALL-HOT · watch canonical plugins · hot-reload without redeploy -->
-<script src="https://sjgant80-hub.github.io/fall-hot/fall-hot.js" defer></script>
-<script>
-  window.addEventListener('fall-hot:ready', function() {
-    window.fallHot.watch([
-      { name: 'fall-palette', url: 'https://sjgant80-hub.github.io/fall-palette/fall-palette.js' },
-      { name: 'fall-bloom',   url: 'https://sjgant80-hub.github.io/fall-bloom/bloom.js' }
-    ], { every: 5 * 60 * 1000 });
-  });
-</script>
-<!-- /◊·κ FALL-HOT -->
-
 </body>
 </html>
