@@ -1,5 +1,7 @@
 # trilogy-sdk
 
+**Live:** [sjgant80-hub.github.io/trilogy-sdk](https://sjgant80-hub.github.io/trilogy-sdk/)
+
 **The AI API Toolkit.** DocMind + Deep + Flux. One install. Three APIs.
 
 ```
